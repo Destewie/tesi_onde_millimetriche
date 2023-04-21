@@ -3,11 +3,11 @@ $user_ = "root"
 $pass_ = ""
 $command = "./Experiments/fede_measurements.sh"
 $remote_folder_path = "/tmp"
-$local_folder_path = "C:\Users\feder\Documents\tirocinio\mikrotik_md_track\Example_data" #TODO: generalizza
+$local_folder_path = "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-mD-Track\Example_data" #TODO: generalizza
 $matlab_filename = "Example"
 $filename_csi = "csi_measurements_fede.txt"
 $filename_ftm = "ftm_measurements_fede.txt"
-$path_matlab_file = "C:\Users\feder\Documents\tirocinio\mikrotik_md_track\Example.m" #TODO: generalizza
+$path_matlab_file = "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-mD-Track\Example.m" #TODO: generalizza
 
 # ----------------------------------------------------- SSH START
 
@@ -94,7 +94,7 @@ $ftm_file_path = "$finalPath\$filename_ftm"
 
 ## ----------------------------------------------------- MATLAB
 
-cd "C:\Users\feder\Documents\tirocinio\mikrotik_md_track" #TODO: rendi una variabile
+cd "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-mD-Track" #TODO: rendi una variabile
 # Start matlab script
 matlab -batch "$matlab_filename $csi_file_path $ftm_file_path $finalPath"
-cd "Z:\" #TODO: rendi una variabile
+cd "C:\Users\feder\Documents\tesi_onde_millimetriche\scripts\remote_computer" #TODO: rendi una variabile

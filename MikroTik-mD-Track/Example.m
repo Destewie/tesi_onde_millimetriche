@@ -37,13 +37,13 @@ step_angle = 1;
 [cb_az, theta_az] = Grid_AoA(step_angle, N,d,lambda);
 [cb_el, theta_el] = Grid_AoA(step_angle, N,d,lambda);
 % Load the oscillator
-load('oscillator-calibration-files/oscillator_1.mat')
+load('oscillator_1.mat')
 
 
 % Set up the folders manually
-csi_filename = [pwd '/Example_data/csi_measurements.txt'];
-ftm_filename = [pwd '/Example_data/ftm_measurements.txt'];
-plot_path = [pwd '/Example_data'];
+csi_filename = [pwd '/Example_data/2023-04-21_measurements/v1/csi_measurements_fede.txt'];
+ftm_filename = [pwd '/Example_data/2023-04-21_measurements/v1/ftm_measurements_fede.txt'];
+plot_path = [pwd '/Example_data/2023-04-21_measurements/v1'];
 
 %If Matlab gets called by a script with arguments, set the file names as
 %those arguments
@@ -179,8 +179,8 @@ saveas(gcf, fullfile(plot_path, 'plot_image'), 'pdf');
 
 
 %% debug
-disp(strcat("csi filename= ", csi_filename))
-disp(strcat("ftm filename= ", ftm_filename))
-disp(strcat("plot path= ", plot_path))
+% disp(strcat("csi filename= ", csi_filename))
+% disp(strcat("ftm filename= ", ftm_filename))
+% disp(strcat("plot path= ", plot_path))
 
 end
