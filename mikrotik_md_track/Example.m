@@ -37,7 +37,7 @@ step_angle = 1;
 [cb_az, theta_az] = Grid_AoA(step_angle, N,d,lambda);
 [cb_el, theta_el] = Grid_AoA(step_angle, N,d,lambda);
 % Load the oscillator
-load('oscillator_1.mat')
+load('oscillator-calibration-files/oscillator_1.mat')
 
 
 % Set up the folders manually
