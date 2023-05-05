@@ -1,13 +1,18 @@
-function []=Example(arg1, arg2, arg3)
+function []=music_and_mdTrack(arg1, arg2, arg3)
 
 %%
 close all
-%clear all
 
 % Load the position of the MikroTik antennas
 load('antennas_mikrotik.mat')
 
 addpath("mD-Track/")
+
+% Calibration
+att = 1e-1;
+
+% Number of samples gathered for CSI
+num_samples = 300;
 
 % Calibration
 att = 1e-1;
@@ -40,8 +45,8 @@ step_angle = 1;
 % Load the oscillator
 load('oscillator_1.mat')
 
-
 % Set up the folders manually
+currentFolder = pwd;
 csi_filename = [pwd '/Example_data/2023-04-21_measurements/v1/csi_measurements_fede.txt'];
 ftm_filename = [pwd '/Example_data/2023-04-21_measurements/v1/ftm_measurements_fede.txt'];
 plot_path = [pwd '/Example_data/2023-04-21_measurements/v1'];
@@ -56,7 +61,6 @@ if nargin >= 3
 end
 
 
-
 %% CSI
 [magnitudes, phases, ~] = Parse_csi(csi_filename);
 
@@ -66,9 +70,9 @@ pre_channel = zeros(6, 6, num_samples);
 % We go up to 30 instead of 32
 % so that 31 and 32 are disabled
 % since they return random data
-for jj=1:30
+for jj=[27,26,28,24,17,19]
 
-    a = phases(:, jj);
+    a = phases(1:num_samples, jj);
     a = a*2*pi/1024;
     
     % Move to complex domain
@@ -103,11 +107,33 @@ for jj=1:30
 
     % Remove oscilator
     a = a/exp(1i*antenna_oscilator_phases(antenna_positions == jj));
-
-    [row,col] = find(antenna_positions == jj);
-    pre_channel(row, col, :) = a(1:num_samples, :);
+    
+    pre_channel(:, jj==[27,26,28,24,17,19]) = a;
 end
 
+%% MUSIC
+channel = pre_channel.';
+% channel = squeeze(channel(:,4,:));
+% create the codebook
+[cb_aoa, theta] = Grid_AoA(step_angle, N,d,lambda);
+
+% create the correlation matrix
+C = channel * channel';
+
+% apply MUSIC
+[ps_db, D] = MUSIC_alej_unknown(C, cb_aoa, 0);
+
+%figure, plot(rad2deg(theta),ps_db)
+
+% Get the angle
+[~, index] = max(ps_db);
+rad2deg(theta(index));
+
+% Encontrar ángulos falsos
+[peaks, locs] = findpeaks(ps_db);
+
+
+%% MD-TRACK
 csi_data = pre_channel;
 
 % Average over the number of samples
@@ -159,30 +185,11 @@ stem(Az_estimated, power, LineWidth=2);
 hold on; 
 xlabel('Azimuth Angle (in deg)');
 ylabel('Power (normalized)');
-title('Md-Track stem plot')
 xlim([-90, 90]);
-saveas(gcf, fullfile(plot_path, 'stem_plot.pdf'), 'pdf');
-
-%% 3D display
-% r = -10:0.01:10;
-% 
-% fig3 = figure();
-% grid on
-% hold on
-% for ii = 1 : 15 %length(El_estimated)
-%     x = r*cosd(El_estimated(ii))*cosd(Az_estimated(ii));
-%     y = r*cosd(El_estimated(ii))*sind(Az_estimated(ii));
-%     z = r*sind(El_estimated(ii));
-%     p = plot3(x, y, z);
-%     p.LineWidth = power(ii)*15;
-% end
-% set(gca, 'XLim', [-1.5 1.5], 'YLim', [0 4.0], 'ZLim', [-1.0 2.0]); 
-% view(60, 20); %imposta in 2 angoli della vista
+figure, plot(rad2deg(theta),ps_db)
+saveas(gcf, fullfile(plot_path, 'plot_image'), 'pdf');
 
 
-%% debug
-% disp(strcat("csi filename= ", csi_filename))
-% disp(strcat("ftm filename= ", ftm_filename))
-% disp(strcat("plot path= ", plot_path))
+
 
 end

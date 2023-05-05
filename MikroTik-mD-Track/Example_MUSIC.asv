@@ -108,7 +108,7 @@ C = channel * channel';
 
 figure
 plot(rad2deg(theta),ps_db)
-xlabel('Azimuth Angle (in deg)');
+xlabel('Angle (')
 ylabel('???')
 title('MUSIC plot')
 saveas(gcf, fullfile(plot_path, 'music_plot.pdf'), 'pdf');
