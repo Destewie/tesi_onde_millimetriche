@@ -1,6 +1,7 @@
+function []=Example_MUSIC(arg1, arg2, arg3)
+
 %%
 close all
-clear all
 
 % Load the position of the MikroTik antennas
 load('antennas_mikrotik.mat')
@@ -41,9 +42,18 @@ load('oscillator_1.mat')
 
 % Set up the folders
 currentFolder = pwd;
-csi_filename = [pwd '/Example_data/2023-05-04_measurements/v2/csi_measurements_fede.txt'];
-ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v2/ftm_measurements_fede.txt'];
-plot_path = [pwd '/Example_data//2023-05-04_measurements/v2'];
+csi_filename = [pwd '/Example_data/2023-05-04_measurements/v1/csi_measurements_fede.txt'];
+ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v1/ftm_measurements_fede.txt'];
+plot_path = [pwd '/Example_data/2023-05-04_measurements/v1'];
+
+%If Matlab gets called by a script with arguments, set the file names as
+%those arguments
+if nargin >= 3
+    % execute this script with the passed arguments 
+    csi_filename = arg1;
+    ftm_filename = arg2;
+    plot_path = arg3;
+end
 
 %% CSI
 [magnitudes, phases, ~] = Parse_csi(csi_filename);
@@ -120,3 +130,5 @@ rad2deg(theta(index));
 
 % Encontrar ángulos falsos
 [peaks, locs] = findpeaks(ps_db);
+
+end

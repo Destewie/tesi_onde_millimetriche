@@ -42,9 +42,9 @@ load('oscillator_1.mat')
 
 
 % Set up the folders manually
-csi_filename = [pwd '/Example_data/2023-04-21_measurements/v1/csi_measurements_fede.txt'];
-ftm_filename = [pwd '/Example_data/2023-04-21_measurements/v1/ftm_measurements_fede.txt'];
-plot_path = [pwd '/Example_data/2023-04-21_measurements/v1'];
+csi_filename = [pwd '/Example_data/2023-05-04_measurements/v1/csi_measurements_fede.txt'];
+ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v1/ftm_measurements_fede.txt'];
+plot_path = [pwd '/Example_data/2023-05-04_measurements/v1'];
 
 %If Matlab gets called by a script with arguments, set the file names as
 %those arguments
