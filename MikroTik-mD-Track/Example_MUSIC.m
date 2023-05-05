@@ -11,7 +11,7 @@ addpath("mD-Track/")
 att = 1e-1;
 
 % Number of samples gathered for CSI
-num_samples = 150;
+num_samples = 300;
 
 % number of antennas
 N = 6;
@@ -36,13 +36,13 @@ step_angle = 1;
 [cb_el, theta_el] = Grid_AoA(step_angle, N,d,lambda);
 
 % Load the oscillator
-load('Example_data/oscillator.mat')
+load('oscillator_1.mat')
 
 
 % Set up the folders
 currentFolder = pwd;
-csi_filename = [pwd '/Example_data/csi_measurements.txt'];
-ftm_filename = [pwd '/Example_data/ftm_measurements.txt'];
+csi_filename = [pwd '/Example_data/2023-05-04_measurements/v2/csi_measurements_fede.txt'];
+ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v2/ftm_measurements_fede.txt'];
 %% CSI
 [magnitudes, phases, ~] = Parse_csi(csi_filename);
 
@@ -69,7 +69,7 @@ for jj=[27,26,28,24,17,19]
     while converged == 0
 
         try
-            [a, phase_offset_0, converged] = Sanitize2(a);
+            [a, phase_offset_0, converged] = Sanitize(a);
         catch
             disp(['Converging error on file ' csi_filename])
         end
@@ -102,7 +102,7 @@ channel = pre_channel.';
 C = channel * channel';
 
 % apply MUSIC
-[ps_db, D] = MUSIC(C, cb_aoa,2, 0);
+[ps_db, D] = MUSIC_alej_unknown(C, cb_aoa, 0);
 
 figure, plot(rad2deg(theta),ps_db)
 
