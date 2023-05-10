@@ -176,15 +176,16 @@ fprintf(fileID, jsonInfo);
 % Chiudi il file
 fclose(fileID);
 
-%% Save the processed data used for plotting
+%% Salva i vettori processati che useresti per plottare
 az_estimated_save_path = strcat(measurement_folder_path, "\azimuth_angles_saveFile.mat");
 save(az_estimated_save_path, 'Az_estimated');
 
+
 el_estimated_save_path = strcat(measurement_folder_path, "\elevation_angles_saveFile.mat");
-save(el_estimated_save_path, 'El_estimated');
+save(el_estimated_save_path, El_estimated);
 
 power_save_path = strcat(measurement_folder_path, "\power_angles_saveFile.mat");
-save(power_save_path, 'power');
+save(power_save_path, power);
 
 
 %% Stem display
