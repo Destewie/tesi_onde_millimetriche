@@ -4,6 +4,17 @@ function []=Example(arg1, arg2, arg3)
 close all
 %clear all
 
+%% Global variables
+
+% Set up the folders manually
+measurement_folder_path = [pwd '/Example_data/2023-05-04_measurements/v1'];
+csi_filename = [pwd '/Example_data/2023-05-04_measurements/v1/csi_measurements_fede.txt'];
+ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v1/ftm_measurements_fede.txt'];
+
+processed_data_folder = 
+
+
+%% Program
 % Load the position of the MikroTik antennas
 load('antennas_mikrotik.mat')
 
@@ -176,16 +187,17 @@ fprintf(fileID, jsonInfo);
 % Chiudi il file
 fclose(fileID);
 
-%% Salva i vettori processati che useresti per plottare
+%% Save the processed data used for plotting
+mkdir([measurement_folder_path, '\', processed_data_folder])
+
 az_estimated_save_path = strcat(measurement_folder_path, "\azimuth_angles_saveFile.mat");
 save(az_estimated_save_path, 'Az_estimated');
 
-
 el_estimated_save_path = strcat(measurement_folder_path, "\elevation_angles_saveFile.mat");
-save(el_estimated_save_path, El_estimated);
+save(el_estimated_save_path, 'El_estimated');
 
 power_save_path = strcat(measurement_folder_path, "\power_angles_saveFile.mat");
-save(power_save_path, power);
+save(power_save_path, 'power');
 
 
 %% Stem display

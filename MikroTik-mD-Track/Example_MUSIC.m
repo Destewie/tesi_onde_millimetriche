@@ -41,10 +41,11 @@ load('oscillator_1.mat')
 
 
 % Set up the folders
-currentFolder = pwd;
-csi_filename = [pwd '/Example_data/2023-05-04_measurements/v1/csi_measurements_fede.txt'];
-ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v1/ftm_measurements_fede.txt'];
-plot_path = [pwd '/Example_data/2023-05-04_measurements/v1'];
+measurement_folder_path = [pwd '\Example_data\2023-05-04_measurements\v1'];
+csi_filename = [measurement_folder_path '\csi_measurements_fede.txt'];
+ftm_filename = [measurement_folder_path '\ftm_measurements_fede.txt'];
+processed_data_folder = [measurement_folder_path '\processed_data\music'];
+plots_folder = [measurement_folder_path '\plots'];
 
 %If Matlab gets called by a script with arguments, set the file names as
 %those arguments
@@ -52,7 +53,7 @@ if nargin >= 3
     % execute this script with the passed arguments 
     csi_filename = arg1;
     ftm_filename = arg2;
-    plot_path = arg3;
+    measurement_folder_path = arg3;
 end
 
 %% CSI
@@ -113,20 +114,34 @@ channel = pre_channel.';
 % create the correlation matrix
 C = channel * channel';
 
-% apply MUSIC
+%% apply MUSIC
 [ps_db, D] = MUSIC_alej_unknown(C, cb_aoa, 0);
+theta_deg = rad2deg(theta);
+
+% save these important variables for plotting
+mkdir(processed_data_folder)
+
+ps_db_save_path = strcat(processed_data_folder, "\ps_db.mat");
+save(ps_db_save_path, 'ps_db');
+
+angles_save_path = strcat(processed_data_folder, "\angles_deg.mat");
+save(angles_save_path, 'theta_deg');
+
+
+%% MUSIC plot
+mkdir(plots_folder);
 
 figure
-plot(rad2deg(theta),ps_db)
+plot(theta_deg, ps_db)
 xlabel('Azimuth Angle (in deg)');
 ylabel('???')
 title('MUSIC plot')
-saveas(gcf, fullfile(plot_path, 'music_plot.pdf'), 'pdf');
+saveas(gcf, fullfile(plots_folder, 'music_plot.pdf'), 'pdf');
 
 
 % Get the angle
 [~, index] = max(ps_db);
-rad2deg(theta(index));
+theta_deg(index);
 
 % Encontrar ángulos falsos
 [peaks, locs] = findpeaks(ps_db);

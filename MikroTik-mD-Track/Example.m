@@ -4,6 +4,17 @@ function []=Example(arg1, arg2, arg3)
 close all
 %clear all
 
+%% Global variables
+
+% Set up the folders manually
+measurement_folder_path = [pwd '\Example_data\2023-05-04_measurements\v1'];
+csi_filename = [measurement_folder_path '\csi_measurements_fede.txt'];
+ftm_filename = [measurement_folder_path '\ftm_measurements_fede.txt'];
+processed_data_folder = [measurement_folder_path '\processed_data\md_track'];
+plots_folder = [measurement_folder_path '\plots'];
+
+
+%% Program
 % Load the position of the MikroTik antennas
 load('antennas_mikrotik.mat')
 
@@ -40,11 +51,6 @@ step_angle = 1;
 % Load the oscillator
 load('oscillator_1.mat')
 
-
-% Set up the folders manually
-csi_filename = [pwd '/Example_data/2023-05-04_measurements/v1/csi_measurements_fede.txt'];
-ftm_filename = [pwd '/Example_data/2023-05-04_measurements/v1/ftm_measurements_fede.txt'];
-measurement_folder_path = [pwd '/Example_data/2023-05-04_measurements/v1'];
 
 %If Matlab gets called by a script with arguments, set the file names as
 %those arguments
@@ -167,7 +173,8 @@ jsonInfo = strcat(jsonInfo, ' \n}');
 
 
 %create a valid path for the file 
-info_path = strcat(measurement_folder_path, "\anglesInfo.txt")
+mkdir(processed_data_folder)
+info_path = strcat(processed_data_folder, "\mainPathInfo.txt")
 
 %create the file
 fileID = fopen(info_path, 'w');
@@ -177,15 +184,18 @@ fprintf(fileID, jsonInfo);
 fclose(fileID);
 
 %% Save the processed data used for plotting
-az_estimated_save_path = strcat(measurement_folder_path, "\azimuth_angles_saveFile.mat");
+az_estimated_save_path = strcat(processed_data_folder, "\azimuth_angles_saveFile.mat");
 save(az_estimated_save_path, 'Az_estimated');
 
-el_estimated_save_path = strcat(measurement_folder_path, "\elevation_angles_saveFile.mat");
+el_estimated_save_path = strcat(processed_data_folder, "\elevation_angles_saveFile.mat");
 save(el_estimated_save_path, 'El_estimated');
 
-power_save_path = strcat(measurement_folder_path, "\power_angles_saveFile.mat");
+power_save_path = strcat(processed_data_folder, "\power_values_saveFile.mat");
 save(power_save_path, 'power');
 
+
+%% ----------------- PLOTS AND DEBUGGING
+mkdir(plots_folder);
 
 %% Stem display
 stem(Az_estimated, power, LineWidth=2);
@@ -194,7 +204,7 @@ xlabel('Azimuth Angle (in deg)');
 ylabel('Power (normalized)');
 title('Md-Track stem plot')
 xlim([-90, 90]);
-saveas(gcf, fullfile(measurement_folder_path, 'stem_plot.pdf'), 'pdf');
+saveas(gcf, fullfile(plots_folder, 'stem_plot.pdf'), 'pdf');
 
 %% 3D display
 % r = -10:0.01:10;
