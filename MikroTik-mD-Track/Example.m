@@ -154,6 +154,29 @@ clc
 disp(['Main path has an azimut of ' num2str(Az_estimated(1)) ' degrees, an elevation of ' num2str(El_estimated(1)) ' degrees and a power of ' num2str(power(1))])
 disp(['The other router is at ' num2str(distance) ' meters'])
 
+%create the json entry that i will save in the file
+jsonInfo = '{ \n\t"azimuthAngle":';
+jsonInfo = strcat(jsonInfo, num2str(Az_estimated(1)));
+jsonInfo = strcat(jsonInfo, ', \n\t"elevationAngle":');
+jsonInfo = strcat(jsonInfo, num2str(El_estimated(1)));
+jsonInfo = strcat(jsonInfo, ', \n\t"power":');
+jsonInfo = strcat(jsonInfo, num2str(power(1)));
+jsonInfo = strcat(jsonInfo, ', \n\t"distance":');
+jsonInfo = strcat(jsonInfo, num2str(distance));
+jsonInfo = strcat(jsonInfo, ' \n}');
+
+
+%create a valid path for the file 
+info_path = strcat(plot_path, "\anglesInfo.txt")
+
+%create the file
+fileID = fopen(info_path, 'w');
+fprintf(fileID, jsonInfo);
+
+% Chiudi il file
+fclose(fileID);
+
+
 %% Stem display
 stem(Az_estimated, power, LineWidth=2);
 hold on; 
