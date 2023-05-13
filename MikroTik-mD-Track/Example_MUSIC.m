@@ -40,12 +40,10 @@ step_angle = 1;
 load('oscillator_1.mat')
 
 
-% Set up the folders
+%% Set up the folders
 measurement_folder_path = [pwd '\Example_data\2023-05-04_measurements\v1'];
 csi_filename = [measurement_folder_path '\csi_measurements_fede.txt'];
 ftm_filename = [measurement_folder_path '\ftm_measurements_fede.txt'];
-processed_data_folder = [measurement_folder_path '\processed_data\music'];
-plots_folder = [measurement_folder_path '\plots'];
 
 %If Matlab gets called by a script with arguments, set the file names as
 %those arguments
@@ -55,6 +53,9 @@ if nargin >= 3
     ftm_filename = arg2;
     measurement_folder_path = arg3;
 end
+
+processed_data_folder = [measurement_folder_path '\processed_data\music'];
+plots_folder = [measurement_folder_path '\plots'];
 
 %% CSI
 [magnitudes, phases, ~] = Parse_csi(csi_filename);

@@ -10,8 +10,7 @@ close all
 measurement_folder_path = [pwd '\Example_data\2023-05-04_measurements\v1'];
 csi_filename = [measurement_folder_path '\csi_measurements_fede.txt'];
 ftm_filename = [measurement_folder_path '\ftm_measurements_fede.txt'];
-processed_data_folder = [measurement_folder_path '\processed_data\md_track'];
-plots_folder = [measurement_folder_path '\plots'];
+
 
 
 %% Program
@@ -61,6 +60,8 @@ if nargin >= 3
     measurement_folder_path = arg3;
 end
 
+processed_data_folder = [measurement_folder_path '\processed_data\md_track'];
+plots_folder = [measurement_folder_path '\plots'];
 
 
 %% CSI
