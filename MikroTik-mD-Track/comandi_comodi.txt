@@ -1,0 +1,35 @@
+-------------- CONNESSIONE
+
+AP (trasmettitore)
+hostapd -B /etc/hostapd.conf
+
+STA (client)
+wpa_supplicant -D nl80211  -i wlan0 -c /etc/wpa_supplicant.conf -B
+
+
+-------------- SINGOLE MISURE
+TOF
+echo -n -e '\x08\x55\x31\x70\xFF\x0A' | iw dev wlan0 vendor recv 0x001374 0x81 -
+
+AOA
+echo -n -e '\x08\x55\x31\x70\xff\x0a' | iw dev wlan0 vendor recv 0x001374 0x93 -
+
+
+-------------- MISURE MULTIPLE (chiaramente da lanciare dal client)
+
+300 CSI
+~/Experiments/csi300_v3.sh /tmp/csi_measurements_fede.txt 'Mikrotik' '\x08\x55\x31\x70\xFF\x0A'
+
+10 FTM
+~/Experiments/ftm10.sh /tmp/ftm_measurements_fede.txt 'Mikrotik' '\x08\x55\x31\x70\xFF\x0A'
+
+
+-------------- RESET CONNESSIONNE CLIENT
+# Reset the interface
+ip link set dev wlan0 down
+ip link set dev wlan0 up
+
+# Reset the supplicant
+killall wpa_supplicant
+
+wpa_supplicant -D nl80211  -i wlan0 -c /etc/wpa_supplicant.conf -B
