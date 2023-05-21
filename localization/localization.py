@@ -23,8 +23,8 @@ def count_directories(directory):
 def get_param_from_json_file(parameter, file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
-        distance = data.get(parameter)
-    return distance
+        result = data.get(parameter)
+    return result
 
 #function that draws a circle given its center coordinates
 def draw_circle(canvas, center_x, center_y, radius, colour):
@@ -44,7 +44,7 @@ CANVAS_HEIGHT = ROOM_HEIGHT + PADDING*2
 TX_X = 119                                  #x position of the ap
 TX_Y = 5                                    #y position of the ap
 AZ_ANGLE_ERROR = 8                          #maximum +- error in the azimuth angle estimate
-RX_TILT = get_param_from_json_file ("rx_tilt", "setup_localization.conf")  #how much (in degrees) the client is tilted in respect to the line that passes through the TX and the RX
+RX_TILT = get_param_from_json_file ("rx_tilt", "/home/des/Documents/università/tesi_onde_millimetriche/localization/setup_localization.conf")  #how much (in degrees) the client is tilted in respect to the line that passes through the TX and the RX
 DIRECTORY_BATCH_MEASURES = get_param_from_json_file("directory_batch_measures", "setup_localization.conf") #the folder containing all the measurements
 NUM_MEASURES = count_directories(DIRECTORY_BATCH_MEASURES)
 
