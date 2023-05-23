@@ -51,18 +51,35 @@ DIRECTORY_BATCH_MEASURES = get_param_from_json_file("directory_batch_measures", 
 NUM_MEASURES = count_directories(DIRECTORY_BATCH_MEASURES)
 MAINPATH_FILE_PATH = "/processed_data/md_track/mainPathInfo.txt"
 
+class Measure:
+    #angles are in degrees, distance is in centimiters
+    def __init__(self, azimuthAngle, elevationAngle, power, distance):
+        self.azimuthAngle = azimuthAngle
+        self.elevationAngle = elevationAngle
+        self.power = power
+        self.distance = distance
 
+    def draw(self):
+        #calculate the x and y coordinates of the measure
+        x, y = convert_azimuth_to_canvas_coordinates(self.distance * 100, self.azimuthAngle)
+        draw_circle(myCanvas, x+PADDING, y+PADDING, 2, "orange")
+
+        print("x: " + str(x) + " y: " + str(y) + " dist: " + str(self.distance*100) + " az: " + str(self.azimuthAngle))
 
 #function that gets the main path info from all the measurements
-def import_main_paths_info(az_angles, el_angles, pow_values, dist_values):
+def import_measures():
+    measures_array = []
     for i in range(1, NUM_MEASURES+1):
-        az_angles.append(get_param_from_json_file("azimuthAngle", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH))
-        el_angles.append(get_param_from_json_file("elevationAngle", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH))
-        pow_values.append(get_param_from_json_file("power", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH))
-        dist_values.append(get_param_from_json_file("distance", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH))
+        azimuth_angle = get_param_from_json_file("azimuthAngle", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
+        elevation_angle = get_param_from_json_file("elevationAngle", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
+        power = get_param_from_json_file("power", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
+        distance = get_param_from_json_file("distance", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
+        measures_array.append( Measure(azimuth_angle, elevation_angle, power, distance) )
+
+    return measures_array
 
 #try to estimate the client position based on the line of sight
-def get_estimated_client_position(az_angles, el_angles, dist_values):
+def get_estimated_client_position(measures):
     average_distance = 0
     average_azimuth_angle = 0
     num_measurements = 0
@@ -70,10 +87,10 @@ def get_estimated_client_position(az_angles, el_angles, dist_values):
     print("per la stima del client vado a prendere il main path delle misure ")
     possible_angles = range(-ANGLE_ERROR, ANGLE_ERROR)
     for i in range(0, NUM_MEASURES):
-        if((az_angles[i] + RX_TILT) in possible_angles and el_angles[i] in possible_angles): 
+        if((measures[i].azimuthAngle + RX_TILT) in possible_angles and measures[i].elevationAngle in possible_angles): 
             print("v" + str(i+1))
-            average_distance += dist_values[i]
-            average_azimuth_angle += az_angles[i]
+            average_distance += measures[i].distance
+            average_azimuth_angle += measures[i].azimuthAngle
             num_measurements += 1
 
     #keep in mind that the distance is in meters, so i have to convert it in centimiters (*100)
@@ -85,32 +102,20 @@ def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
     y = TX_Y + (distance * math.cos(math.radians(azimuth_angle)))
     return x, y
 
-#function that draws every measure
-def draw_measures(az_angles, dist_values):
-    for i in range(0, NUM_MEASURES):
-        #calculate the x and y coordinates of the measure
-        x, y = convert_azimuth_to_canvas_coordinates(dist_values[i] * 100, az_angles[i])
-        print("x: " + str(x) + " y: " + str(y) + " dist: " + str(dist_values[i]*100) + " az: " + str(az_angles[i]))
-
-        draw_circle(myCanvas, x+PADDING, y+PADDING, 2, "orange")
     
 
 #import matlab processed files
 #servirà in futuro, quando dovrò guardare dati oltre al main path per ogni misura
-azAngles = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/azimuth_angles_saveFile.mat")
-elAngles = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/elevation_angles_saveFile.mat")
-powerValues = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/power_values_saveFile.mat")
+#azAngles = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/azimuth_angles_saveFile.mat")
+#elAngles = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/elevation_angles_saveFile.mat")
+#powerValues = scipy.io.loadmat("/home/des/Documents/università/tesi_onde_millimetriche/MikroTik-mD-Track/Example_data/2023-05-18_measurements/v11/processed_data/md_track/power_values_saveFile.mat")
 
 
 #import all main path info from all the folders in #DIRECTORY_BATCH_MEASURES
-azimuth_angles = []
-elevation_angles = []
-power_values = []
-distances = []
-import_main_paths_info(azimuth_angles, elevation_angles, power_values, distances)
+measures = import_measures()
 
 #try to estimate the client position based on the line of sight
-average_distance, average_azimuth_angle = get_estimated_client_position(azimuth_angles, elevation_angles, distances)
+average_distance, average_azimuth_angle = get_estimated_client_position(measures)
 
 
 ############################################################################################## DRAWING
@@ -131,12 +136,13 @@ myCanvas.create_rectangle(0+PADDING, 0+PADDING, ROOM_WIDTH+PADDING, ROOM_HEIGHT+
 draw_circle(myCanvas, TX_X+PADDING, TX_Y+PADDING, 3, "green")
 
 #draw RX estimated position
-estimatedDist, estimatedAz = get_estimated_client_position(azimuth_angles, elevation_angles, distances)
+estimatedDist, estimatedAz = get_estimated_client_position(measures)
 rx_x, rx_y = convert_azimuth_to_canvas_coordinates(estimatedDist, estimatedAz)
 draw_circle(myCanvas, rx_x+PADDING, rx_y+PADDING, 6, "red")
 
 #draw measures
-draw_measures(azimuth_angles, distances)
+for i in range(0, NUM_MEASURES):
+    measures[i].draw()
 
 #end draw statement
 root.mainloop()
