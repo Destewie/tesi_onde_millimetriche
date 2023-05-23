@@ -68,8 +68,9 @@ def get_estimated_client_position(az_angles, el_angles, dist_values):
     num_measurements = 0
 
     print("per la stima del client vado a prendere il main path delle misure ")
+    possible_angles = range(-ANGLE_ERROR, ANGLE_ERROR)
     for i in range(0, NUM_MEASURES):
-        if((az_angles[i] + RX_TILT) in range(-ANGLE_ERROR, ANGLE_ERROR) and el_angles[i] in range(-ANGLE_ERROR, ANGLE_ERROR)): 
+        if((az_angles[i] + RX_TILT) in possible_angles and el_angles[i] in possible_angles): 
             print("v" + str(i+1))
             average_distance += dist_values[i]
             average_azimuth_angle += az_angles[i]
@@ -78,16 +79,20 @@ def get_estimated_client_position(az_angles, el_angles, dist_values):
     #keep in mind that the distance is in meters, so i have to convert it in centimiters (*100)
     return (100 * (average_distance / num_measurements)), (average_azimuth_angle / num_measurements)
 
+#function that uses TX coordinates, distance from TX to RX and the azimuth angle to calculate the coordinates of the RX
+def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
+    x = TX_X + (distance * math.sin(math.radians(azimuth_angle)))
+    y = TX_Y + (distance * math.cos(math.radians(azimuth_angle)))
+    return x, y
+
 #function that draws every measure
 def draw_measures(az_angles, dist_values):
     for i in range(0, NUM_MEASURES):
         #calculate the x and y coordinates of the measure
-        x = TX_X + (dist_values[i]*100 * math.sin(math.radians(az_angles[i])))
-        y = TX_Y + (dist_values[i]*100 * math.cos(math.radians(az_angles[i])))
+        x, y = convert_azimuth_to_canvas_coordinates(dist_values[i] * 100, az_angles[i])
         print("x: " + str(x) + " y: " + str(y) + " dist: " + str(dist_values[i]*100) + " az: " + str(az_angles[i]))
 
         draw_circle(myCanvas, x+PADDING, y+PADDING, 2, "orange")
-        
     
 
 #import matlab processed files
@@ -107,6 +112,9 @@ import_main_paths_info(azimuth_angles, elevation_angles, power_values, distances
 #try to estimate the client position based on the line of sight
 average_distance, average_azimuth_angle = get_estimated_client_position(azimuth_angles, elevation_angles, distances)
 
+
+############################################################################################## DRAWING
+
 #canvas setup
 root = Tk()
 root.title("Client's aproximate position")
@@ -123,10 +131,15 @@ myCanvas.create_rectangle(0+PADDING, 0+PADDING, ROOM_WIDTH+PADDING, ROOM_HEIGHT+
 draw_circle(myCanvas, TX_X+PADDING, TX_Y+PADDING, 3, "green")
 
 #draw RX estimated position
-#draw_circle(myCanvas, TX_X+PADDING, TX_Y+average_distance+PADDING, 5, "red")
+estimatedDist, estimatedAz = get_estimated_client_position(azimuth_angles, elevation_angles, distances)
+rx_x, rx_y = convert_azimuth_to_canvas_coordinates(estimatedDist, estimatedAz)
+draw_circle(myCanvas, rx_x+PADDING, rx_y+PADDING, 6, "red")
 
 #draw measures
 draw_measures(azimuth_angles, distances)
 
 #end draw statement
 root.mainloop()
+
+############################################################################################## END DRAWING
+
