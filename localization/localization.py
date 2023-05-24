@@ -38,13 +38,15 @@ def draw_circle(canvas, center_x, center_y, radius, colour):
 
 
 ##########CONSTANTS (lenghts are in centimiters)
-ROOM_WIDTH = 237
-ROOM_HEIGHT = 428
+ROOM_WIDTH = get_param_from_json_file("room_width", "setup_localization.conf")
+ROOM_HEIGHT = get_param_from_json_file("room_height", "setup_localization.conf")
 PADDING = 20*10                             #border outside the room drawing
 CANVAS_WIDTH = ROOM_WIDTH + PADDING*2
 CANVAS_HEIGHT = ROOM_HEIGHT + PADDING*2
-TX_X = 119                                  #x position of the ap
-TX_Y = 5                                    #y position of the ap
+TX_X = get_param_from_json_file("tx_x", "setup_localization.conf")  #x position of the ap
+TX_Y = get_param_from_json_file("tx_y", "setup_localization.conf")  #y position of the ap
+RX_X = get_param_from_json_file("rx_x", "setup_localization.conf")  #x position of the client
+RX_Y = get_param_from_json_file("rx_y", "setup_localization.conf")  #y position of the client
 ANGLE_ERROR = 7                             #maximum +- error in the azimuth angle estimate
 DISTANCE_PERCENTAGE_ERROR = 1.5             #maximum +- error in the distance estimate
 RX_TILT = get_param_from_json_file ("rx_tilt", "setup_localization.conf")  #how much (in degrees) the client is tilted in respect to the line that passes through the TX and the RX
@@ -242,6 +244,9 @@ myCanvas.create_rectangle(0+PADDING, 0+PADDING, ROOM_WIDTH+PADDING, ROOM_HEIGHT+
 
 #draw TX
 draw_circle(myCanvas, TX_X+PADDING, TX_Y+PADDING, 3, "green")
+
+#draw RX
+draw_circle(myCanvas, RX_X+PADDING, RX_Y+PADDING, 3, "green")
 
 #draw groups
 draw_groups(create_groups(measures))
