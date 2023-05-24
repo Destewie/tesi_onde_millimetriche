@@ -82,6 +82,11 @@ class Measure:
         print("y: " + str(self.y))
         print("")
 
+#a group of measures that have similar caracteristics (similar distance and azimuth angle)
+#class Group:
+#    def __init__(self, measures) -> None:
+#        self.measures = measures
+
 
 
 
@@ -158,7 +163,6 @@ def print_groups(groups):
     for group in groups:
         print("group:" + str(i))
         i+=1
-        
         for measure in group:
             print(measure.getName())
 
@@ -178,12 +182,23 @@ def draw_groups(groups):
 
 
 #get wall estimations
-#a wall is in between the RX estimate and every other group 
-#def get_wall_estimations(groups, estimated_client_position):
-#    wall_estimations = []
-#    for group in groups:
-#        wall_estimations.append() 
-#    return wall_estimations
+#a wall is in between the RX estimate and the average of every member of the group 
+def draw_wall_estimations(groups, client_x, client_y):
+    for group in groups:
+        average_x = 0
+        average_y = 0
+        for measure in group:
+            average_x += measure.x
+            average_y += measure.y
+        average_x = average_x / len(group)
+        average_y = average_y / len(group)
+
+        #now the position of the wall is the average between client x and y positions
+        wall_x = (client_x + average_x) / 2
+        wall_y = (client_y + average_y) / 2
+        draw_circle(myCanvas, wall_x+PADDING, wall_y+PADDING, 3, "blue")
+
+
 
 
 
@@ -236,6 +251,8 @@ estimatedDist, estimatedAz = get_estimated_client_position(measures)
 rx_x, rx_y = convert_azimuth_to_canvas_coordinates(estimatedDist, estimatedAz)
 draw_circle(myCanvas, rx_x+PADDING, rx_y+PADDING, 6, "red")
 
+#draw wall estimations
+draw_wall_estimations(create_groups(measures), rx_x, rx_y)
 
 #draw every single measure
 for i in range(0, NUM_MEASURES):
