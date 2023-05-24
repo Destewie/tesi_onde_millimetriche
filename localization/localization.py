@@ -52,6 +52,9 @@ DIRECTORY_BATCH_MEASURES = get_param_from_json_file("directory_batch_measures", 
 NUM_MEASURES = count_directories(DIRECTORY_BATCH_MEASURES)
 MAINPATH_FILE_PATH = "/processed_data/md_track/mainPathInfo.txt"
 
+possible_angles = range(-ANGLE_ERROR, ANGLE_ERROR)
+
+
 class Measure:
     #angles are in degrees, distance is in centimiters
     def __init__(self, id, azimuthAngle, elevationAngle, power, distance):
@@ -79,6 +82,9 @@ class Measure:
         print("y: " + str(self.y))
         print("")
 
+
+
+
 #function that gets the main path info from all the measurements
 def import_measures():
     measures_array = []
@@ -98,7 +104,6 @@ def get_estimated_client_position(measures):
     num_measurements = 0
 
     print("per la stima del client vado a prendere il main path delle misure ")
-    possible_angles = range(-ANGLE_ERROR, ANGLE_ERROR)
     for i in range(0, NUM_MEASURES):
         if(distance_percentage_diff(measures[0], measures[i]) < DISTANCE_PERCENTAGE_ERROR and (measures[i].azimuthAngle + RX_TILT) in possible_angles and measures[i].elevationAngle in possible_angles): 
             print(measures[i].getName())
@@ -118,14 +123,69 @@ def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
 
 #prints all the percentage difference in distance between the first measure and the others
 def percentage_diff_in_distance(measures):
+    print("percentage difference in distance between the measure with least distance from the TX and the others:")
     first_measure = measures[0]
     for i in range(1, NUM_MEASURES):
         print(measures[i].getName() + ": " + str(100 * (measures[i].distance - first_measure.distance) / first_measure.distance) + "%")
+    print("")
+
 
 #calculates the percentage difference in distance between two measures
 def distance_percentage_diff(measure1, measure2):
     return int(100 * (measure2.distance - measure1.distance) / measure1.distance)
     
+#creates groups based on the distance_percentage_diff. The groups are created by taking the first measure and comparing it with the others. when a measure has the difference > DISTANCE_PERCENTAGE_ERROR becomes the leader of the group and the following measures are based on it.
+def create_groups(measures):
+    groups = []
+    group = []
+    leader_measure = measures[0]
+    group.append(leader_measure)
+    for i in range(1, NUM_MEASURES):
+        #if the distance percentage difference is less than the error and their azimuth angle is kinda close, put it in the group
+        if(distance_percentage_diff(leader_measure, measures[i]) < DISTANCE_PERCENTAGE_ERROR and ((leader_measure.azimuthAngle - measures[i].azimuthAngle) in possible_angles)) :
+            group.append(measures[i])
+        else:
+            leader_measure = measures[i]
+            groups.append(group)
+            group = []
+            group.append(measures[i])
+    groups.append(group)
+    return groups
+
+#print groups
+def print_groups(groups):
+    i=0
+    for group in groups:
+        print("group:" + str(i))
+        i+=1
+        
+        for measure in group:
+            print(measure.getName())
+
+        print("")
+
+#draw every group as an average of every member of the group
+def draw_groups(groups):
+    for group in groups:
+        average_x = 0
+        average_y = 0
+        for measure in group:
+            average_x += measure.x
+            average_y += measure.y
+        average_x = average_x / len(group)
+        average_y = average_y / len(group)
+        draw_circle(myCanvas, average_x+PADDING, average_y+PADDING, 5, "orange")
+
+
+#get wall estimations
+#a wall is in between the RX estimate and every other group 
+#def get_wall_estimations(groups, estimated_client_position):
+#    wall_estimations = []
+#    for group in groups:
+#        wall_estimations.append() 
+#    return wall_estimations
+
+
 
 #import matlab processed files
 #servirà in futuro, quando dovrò guardare dati oltre al main path per ogni misura
@@ -140,11 +200,15 @@ measures = import_measures()
 #sort the measures by distance from the TX
 measures.sort(key=lambda x: x.distance)
 
+#print the percentage difference in distance between the first measure and the others
 percentage_diff_in_distance(measures)
 
+#print the groups
+groups = print_groups(create_groups(measures))
+
 #print the specs of the measures
-for i in range(0, NUM_MEASURES):
-    measures[i].printSpecs()
+#for i in range(0, NUM_MEASURES):
+#    measures[i].printSpecs()
 
 
 ############################################################################################## DRAWING
@@ -164,12 +228,16 @@ myCanvas.create_rectangle(0+PADDING, 0+PADDING, ROOM_WIDTH+PADDING, ROOM_HEIGHT+
 #draw TX
 draw_circle(myCanvas, TX_X+PADDING, TX_Y+PADDING, 3, "green")
 
+#draw groups
+draw_groups(create_groups(measures))
+
 #draw RX estimated position
 estimatedDist, estimatedAz = get_estimated_client_position(measures)
 rx_x, rx_y = convert_azimuth_to_canvas_coordinates(estimatedDist, estimatedAz)
 draw_circle(myCanvas, rx_x+PADDING, rx_y+PADDING, 6, "red")
 
-#draw measures
+
+#draw every single measure
 for i in range(0, NUM_MEASURES):
     measures[i].draw()
 
