@@ -40,12 +40,13 @@ def draw_circle(canvas, center_x, center_y, radius, colour):
 ##########CONSTANTS (lenghts are in centimiters)
 ROOM_WIDTH = 237
 ROOM_HEIGHT = 428
-PADDING = 20*10                                #border outside the room drawing
+PADDING = 20*10                             #border outside the room drawing
 CANVAS_WIDTH = ROOM_WIDTH + PADDING*2
 CANVAS_HEIGHT = ROOM_HEIGHT + PADDING*2
 TX_X = 119                                  #x position of the ap
 TX_Y = 5                                    #y position of the ap
-ANGLE_ERROR = 8                          #maximum +- error in the azimuth angle estimate
+ANGLE_ERROR = 7                             #maximum +- error in the azimuth angle estimate
+DISTANCE_PERCENTAGE_ERROR = 1.5             #maximum +- error in the distance estimate
 RX_TILT = get_param_from_json_file ("rx_tilt", "setup_localization.conf")  #how much (in degrees) the client is tilted in respect to the line that passes through the TX and the RX
 DIRECTORY_BATCH_MEASURES = get_param_from_json_file("directory_batch_measures", "setup_localization.conf") #the folder containing all the measurements
 NUM_MEASURES = count_directories(DIRECTORY_BATCH_MEASURES)
@@ -53,18 +54,30 @@ MAINPATH_FILE_PATH = "/processed_data/md_track/mainPathInfo.txt"
 
 class Measure:
     #angles are in degrees, distance is in centimiters
-    def __init__(self, azimuthAngle, elevationAngle, power, distance):
+    def __init__(self, id, azimuthAngle, elevationAngle, power, distance):
+        self.id = id
         self.azimuthAngle = azimuthAngle
         self.elevationAngle = elevationAngle
         self.power = power
-        self.distance = distance
+        self.distance = distance * 100
+        #calculate the x and y coordinates of the measure
+        self.x, self.y = convert_azimuth_to_canvas_coordinates(self.distance, self.azimuthAngle)
 
     def draw(self):
-        #calculate the x and y coordinates of the measure
-        x, y = convert_azimuth_to_canvas_coordinates(self.distance * 100, self.azimuthAngle)
-        draw_circle(myCanvas, x+PADDING, y+PADDING, 2, "orange")
+        draw_circle(myCanvas, self.x+PADDING, self.y+PADDING, 2, "orange")
 
-        print("x: " + str(x) + " y: " + str(y) + " dist: " + str(self.distance*100) + " az: " + str(self.azimuthAngle))
+    def getName(self):
+        return "v" + str(self.id)
+
+    def printSpecs(self):
+        print("name: " + self.getName())
+        print("azimuth angle: " + str(self.azimuthAngle))
+        print("elevation angle: " + str(self.elevationAngle))
+        print("power: " + str(self.power))
+        print("distance: " + str(self.distance))
+        print("x: " + str(self.x))
+        print("y: " + str(self.y))
+        print("")
 
 #function that gets the main path info from all the measurements
 def import_measures():
@@ -74,7 +87,7 @@ def import_measures():
         elevation_angle = get_param_from_json_file("elevationAngle", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
         power = get_param_from_json_file("power", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
         distance = get_param_from_json_file("distance", DIRECTORY_BATCH_MEASURES + "/v" + str(i) + MAINPATH_FILE_PATH)
-        measures_array.append( Measure(azimuth_angle, elevation_angle, power, distance) )
+        measures_array.append( Measure(i, azimuth_angle, elevation_angle, power, distance) )
 
     return measures_array
 
@@ -87,14 +100,15 @@ def get_estimated_client_position(measures):
     print("per la stima del client vado a prendere il main path delle misure ")
     possible_angles = range(-ANGLE_ERROR, ANGLE_ERROR)
     for i in range(0, NUM_MEASURES):
-        if((measures[i].azimuthAngle + RX_TILT) in possible_angles and measures[i].elevationAngle in possible_angles): 
-            print("v" + str(i+1))
+        if(distance_percentage_diff(measures[0], measures[i]) < DISTANCE_PERCENTAGE_ERROR and (measures[i].azimuthAngle + RX_TILT) in possible_angles and measures[i].elevationAngle in possible_angles): 
+            print(measures[i].getName())
             average_distance += measures[i].distance
             average_azimuth_angle += measures[i].azimuthAngle
             num_measurements += 1
 
+
     #keep in mind that the distance is in meters, so i have to convert it in centimiters (*100)
-    return (100 * (average_distance / num_measurements)), (average_azimuth_angle / num_measurements)
+    return (average_distance / num_measurements), (average_azimuth_angle / num_measurements)
 
 #function that uses TX coordinates, distance from TX to RX and the azimuth angle to calculate the coordinates of the RX
 def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
@@ -102,6 +116,15 @@ def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
     y = TX_Y + (distance * math.cos(math.radians(azimuth_angle)))
     return x, y
 
+#prints all the percentage difference in distance between the first measure and the others
+def percentage_diff_in_distance(measures):
+    first_measure = measures[0]
+    for i in range(1, NUM_MEASURES):
+        print(measures[i].getName() + ": " + str(100 * (measures[i].distance - first_measure.distance) / first_measure.distance) + "%")
+
+#calculates the percentage difference in distance between two measures
+def distance_percentage_diff(measure1, measure2):
+    return int(100 * (measure2.distance - measure1.distance) / measure1.distance)
     
 
 #import matlab processed files
@@ -114,8 +137,14 @@ def convert_azimuth_to_canvas_coordinates(distance, azimuth_angle):
 #import all main path info from all the folders in #DIRECTORY_BATCH_MEASURES
 measures = import_measures()
 
-#try to estimate the client position based on the line of sight
-average_distance, average_azimuth_angle = get_estimated_client_position(measures)
+#sort the measures by distance from the TX
+measures.sort(key=lambda x: x.distance)
+
+percentage_diff_in_distance(measures)
+
+#print the specs of the measures
+for i in range(0, NUM_MEASURES):
+    measures[i].printSpecs()
 
 
 ############################################################################################## DRAWING
