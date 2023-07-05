@@ -4,6 +4,8 @@
 #THIS IS A TEST CODE. SOME PARTS(like the error detection in dmesg) AREN'T BULLETPROOF.
 
 
+directory="$1"
+
 reconnect() {                                                                                      
     connected=0                                                                                    
                                                                                                    
@@ -30,8 +32,8 @@ reconnect() {
         # Break after a certain number of measurements                                         
         if [[ $j -eq 10 ]]; then                                                               
           echo "[ToF] We cannot connect after 10 seconds"                                      
-          echo "Unreachable" > /tmp/aoa_measurements.txt                                       
-          exit                                                                              
+          echo "Unreachable" > "$directory"
+          exit
         fi                                                                                     
                                                                                                
         sleep 1                                                                                
