@@ -37,8 +37,7 @@ if(!$session) {
 # Execute a command on the remote server
 $result = Invoke-SSHCommand -SessionId $session.SessionId -ShowStandardOutputStream -Command $command
 
-# Display the results (it seems to wait until the end of the command sent before) 
-#(need to test with commands that don't print all the output in one go)
+# Display the results
 $result.Output
 
 
@@ -99,6 +98,6 @@ cd "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-mD-Track" #TODO: r
 
 # Start matlab script
 matlab -batch "$mdTrack_filename $csi_file_path $ftm_file_path $finalPath"
-matlab -batch "$music_filename $csi_file_path $ftm_file_path $finalPath"
+#matlab -batch "$music_filename $csi_file_path $ftm_file_path $finalPath"
 
 cd "C:\Users\feder\Documents\tesi_onde_millimetriche\scripts\remote_computer" #TODO: rendi una variabile
