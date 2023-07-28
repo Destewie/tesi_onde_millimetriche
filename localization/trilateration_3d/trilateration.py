@@ -1,9 +1,8 @@
-import math
+import numpy as np
+from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-
-#classe sfera
 class Sphere:
     def __init__(self, x, y, z, radius):
         self.x = x
@@ -11,70 +10,63 @@ class Sphere:
         self.z = z
         self.radius = radius
 
-#funzione per trovare le intersezioni delle sfere
-def find_sphere_intersections(spheres):
-    intersections = []
-    
-    for i in range(len(spheres)):
-        for j in range(i + 1, len(spheres)):
-            A = spheres[i]
-            B = spheres[j]
-            
-            x1, y1, z1, r1 = A.x, A.y, A.z, A.radius
-            x2, y2, z2, r2 = B.x, B.y, B.z, B.radius
-            
-            distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
-            
-            if distance <= r1 + r2:
-                # Calcolo gli angoli di rotazione dei due piani
-                angle1 = math.atan2(y2 - y1, x2 - x1)
-                angle2 = math.acos((r1 ** 2 + distance ** 2 - r2 ** 2) / (2 * r1 * distance))
-                
-                # Calcolo le coordinate dei punti di intersezione
-                intersection1_x = x1 + r1 * math.cos(angle1 + angle2)
-                intersection1_y = y1 + r1 * math.sin(angle1 + angle2)
-                intersection1_z = z1 + r1 * math.sin(math.acos((z2 - z1) / distance))
-                
-                intersection2_x = x1 + r1 * math.cos(angle1 - angle2)
-                intersection2_y = y1 + r1 * math.sin(angle1 - angle2)
-                intersection2_z = z1 - r1 * math.sin(math.acos((z2 - z1) / distance))
-                
-                # Aggiungo i punti di intersezione al vettore di risultato
-                intersections.append((intersection1_x, intersection1_y, intersection1_z))
-                intersections.append((intersection2_x, intersection2_y, intersection2_z))
-    
-    return intersections
+# Funzione di distanza tra un punto e una sfera
+def distance_from_point_to_sphere(point, sphere):
+    center = np.array([sphere.x, sphere.y, sphere.z])
+    dist_squared = abs(np.linalg.norm(point - center) - sphere.radius) ** 2
+    return dist_squared
+
+# Funzione di distanza tra un punto e un insieme di sfere
+def distance_from_point_to_spheres(point, spheres):
+    total_distance_squared = 0
+    for sphere in spheres:
+        dist_squared = distance_from_point_to_sphere(point, sphere)
+        total_distance_squared += dist_squared
+    return total_distance_squared
+
+# Funzione di ottimizzazione
+def optimize_distance(spheres):
+    result = minimize(
+        lambda point: distance_from_point_to_spheres(point, spheres),
+        x0=np.zeros(3),  # Punto iniziale (assumiamo un punto iniziale [0, 0, 0])
+        method='BFGS',  # Metodo di ottimizzazione
+    )
+    return result.x
+
+# Definizione delle sfere
+ap_height = 2.44
+spheres = [
+    Sphere(0.2, 6.055, ap_height, 5.83), #13
+    Sphere(2.83, 6.618, ap_height, 4.79), #12
+    Sphere(0.175, 0.755, ap_height, 4.9), #9
+    Sphere(6, 0.145, ap_height, 3.23), #10
+]
+
+# Calcolo del punto più probabile di intersezione delle sfere
+intersection_point = optimize_distance(spheres)
+print("Punto più probabile di intersezione:", intersection_point)
 
 
-# Esempio di utilizzo
-routers_height = 2.44
+#stampo la distanza tra ogni sfera e il punto (4.44, 2, 0.93)
+for sphere in spheres:
+    print("Distanza tra il punto e la sfera: ", distance_from_point_to_sphere(np.array([4.44, 2, 0.93]), sphere))
 
-mik9 = Sphere(0.175, 6.49, routers_height, 4.9026)
-mik11 = Sphere(6.077, 0.645, routers_height, 3.2268)
-mik13 = Sphere(0.2, 1.19, routers_height, 5.8377)
-mik12 = Sphere(2.83, 0.627, routers_height, 4.7901)
 
-spheres = [mik9, mik11, mik13, mik12]
-intersections = find_sphere_intersections(spheres)
-
-print(intersections)
-
-# Plot
+# Creazione del grafico 3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# Plot dei centri delle sfere
+# Plot dei centri delle sfere come tondini blu
 for sphere in spheres:
-    ax.scatter(sphere.x, sphere.y, sphere.z, c='b', marker='o')
+    ax.scatter(sphere.x, sphere.y, sphere.z, c='blue', marker='o')
 
-# Plot delle intersezioni
-for intersection in intersections:
-    ax.scatter(intersection[0], intersection[1], intersection[2], c='r', marker='x')
+ax.scatter (4.44, 2, 0.93, c='green', marker='o')
+# Plot del punto stimato come "x" rossa
+ax.scatter(intersection_point[0], intersection_point[1], intersection_point[2], c='red', marker='x')
 
-# Impostazioni aggiuntive
+# Etichette degli assi
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
-plt.title('Centri delle sfere e intersezioni')
-plt.grid()
+
 plt.show()
