@@ -1,5 +1,8 @@
 import numpy as np
 from scipy.optimize import minimize
+import sys
+import os
+import json
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -11,7 +14,53 @@ class Sphere:
         self.z = z
         self.radius = radius
 
-#----------------------------------FUNCTIONS----------------------------------
+#----------------------------------FUNCTIONS---------------------------------
+
+# Funzione di controllo argomenti passati da linea di comando
+def check_args():
+    #controllo numero di argomenti
+    if len(sys.argv) != 3:
+        print("Usage: python3 trilateration.py <percorso file json della misura> <percoso file json delle posizioni dei router>")
+        exit(1)
+
+    #controllo che i file json esistano
+    if not os.path.exists(sys.argv[1]):
+        print("Il file json della misura non esiste")
+        exit(1)
+    if not os.path.exists(sys.argv[2]):
+        print("Il file json delle posizioni dei router non esiste")
+        exit(1)
+
+# Funzione che mi prende la ground truth (vere coordinate) del client dal file delle misure
+def get_ground_truth(measures_file):
+    with open(measures_file) as f:
+        data_m = json.load(f)
+    client_coordinates = data_m["client_ground_truth"]
+    return client_coordinates
+    
+
+# Funzione che:
+# - prende come input due file json che vengono passati da linea di comano: il primo definisce i raggi delle sfere, mentre il secondo contiene le coordinate di ogni sfera
+# - restituisce una lista di oggetti di tipo Sphere
+def get_spheres_from_json(measures_file, coordinates_file):
+    with open(measures_file) as f:
+        data_m = json.load(f)
+    with open(coordinates_file) as f:
+        coordinates = json.load(f)
+
+    #prendo il vettore delle misure dal file
+    measures = data_m["measures"]
+
+    spheres = []
+
+    #per ogni misura vado a prendermi la posizione del router dal file e creo una sfera di raggio pari alla distance presente nel file delle misure
+    for measure in measures:
+        #controllo che la misura della distanza sia affidabile
+        if(measure["distance_reliability"] == 1):
+            router_info = coordinates[measure["ap_id"]]
+            spheres.append(Sphere(router_info["x"], router_info["y"], router_info["height"], measure["distance"]))
+
+    return spheres 
 
 # Funzione di distanza tra un punto e una sfera
 def distance_from_point_to_sphere(point, sphere):
@@ -40,20 +89,16 @@ def optimize_distance(spheres):
 
 #----------------------------------MAIN----------------------------------
 
-# Definizione delle sfere
-ap_height = 2.44
-spheres = [
-    Sphere(0.2, 6.055, ap_height, 5.83), #13
-    Sphere(2.83, 6.618, ap_height, 4.79), #12
-    Sphere(0.175, 0.755, ap_height, 4.9), #9
-    Sphere(6, 0.145, ap_height, 3.23), #10
-]
+#controllo argomenti passati da linea di comando
+check_args()
+
+#crea la lista di sfere
+spheres = get_spheres_from_json(sys.argv[1], sys.argv[2])
 
 # Calcolo del punto più probabile di intersezione delle sfere
 intersection_point = optimize_distance(spheres)
 print("Estimated point:", intersection_point)
 print("Real point: [4.44, 2, 0.93]")
-
 
 #print point to point distance between the estimated point and (4.44, 2, 0.93)
 print("Distanza tra il punto stimato e la ground truth: ", np.linalg.norm(intersection_point - np.array([4.44, 2, 0.93])))
@@ -68,8 +113,10 @@ ax = fig.add_subplot(111, projection='3d')
 for sphere in spheres:
     ax.scatter(sphere.x, sphere.y, sphere.z, c='blue', marker='o')
 
+# plot del client prendendo la ground truth dal file
+client_coordinates = get_ground_truth(sys.argv[1])
+ax.scatter(client_coordinates["x"], client_coordinates["y"], client_coordinates["z"], c='green', marker='o')
 
-ax.scatter (4.44, 2, 0.93, c='green', marker='o')
 # Plot del punto stimato come "x" rossa
 ax.scatter(intersection_point[0], intersection_point[1], intersection_point[2], c='red', marker='x')
 
