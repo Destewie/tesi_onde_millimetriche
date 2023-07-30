@@ -132,7 +132,7 @@ def get_error_with_different_number_of_aps(spheres):
 # Funzione che salva nella stessa cartella del file delle misure un file json contenente il dizionario che gli viene passato
 def save_json(dictionary, measures_file):
     folder_path = os.path.dirname(measures_file)
-    file_name = "error_per_subset_dimension.json"
+    file_name = "trilateration_error_per_subset_dimension.json"
 
     file_path = os.path.join(folder_path, file_name)
     with open(file_path, 'w') as outfile:
