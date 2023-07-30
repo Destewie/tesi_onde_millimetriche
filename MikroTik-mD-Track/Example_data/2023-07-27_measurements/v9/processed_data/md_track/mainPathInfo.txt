@@ -1,4 +1,4 @@
-{ 
+{
 	"azimuthAngle":22, 
 	"elevationAngle":17, 
 	"power":0.63867, 
