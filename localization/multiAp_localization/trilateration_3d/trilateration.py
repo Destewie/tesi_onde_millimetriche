@@ -126,10 +126,18 @@ def get_error_with_different_number_of_aps(spheres):
     #calcolo la distanza media per l'ultimo numero di sfere (non viene calcolata nel ciclo for)
     error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
 
-    #printo il dizionario
-    print(error_per_subset_dimension)
-
     return error_per_subset_dimension
+
+
+# Funzione che salva nella stessa cartella del file delle misure un file json contenente il dizionario che gli viene passato
+def save_json(dictionary, measures_file):
+    folder_path = os.path.dirname(measures_file)
+    file_name = "error_per_subset_dimension.json"
+
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'w') as outfile:
+        json.dump(dictionary, outfile)
+
 
 #----------------------------------MAIN----------------------------------
 
@@ -153,6 +161,10 @@ print ()
 #calcolo l'errore che avrei con un numero di APs diverso
 print("Errore medio considerando solo n access points per volta:")
 error_per_subset_dimension = get_error_with_different_number_of_aps(spheres)
+print(error_per_subset_dimension)
+
+#salvo su un file json l'errore che avrei con un numero di APs diverso
+save_json(error_per_subset_dimension, sys.argv[1])
 
 #----------------------------------PLOT ESTIMATED POINT----------------------------------
 
