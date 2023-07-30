@@ -5,6 +5,7 @@ import os
 import json
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from itertools import combinations, chain
 
 #----------------------------------CLASS----------------------------------
 class Sphere:
@@ -38,6 +39,10 @@ def get_ground_truth(measures_file):
     client_coordinates = data_m["client_ground_truth"]
     return client_coordinates
     
+#calculate every possible subset of spheres, excluding all the subsets with only one element and the subset with all the elements
+def all_subsets_except_single_and_full(set_elements):
+    all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(2, len(set_elements)+1))
+    return all_subsets
 
 # Funzione che:
 # - prende come input due file json che vengono passati da linea di comano: il primo definisce i raggi delle sfere, mentre il secondo contiene le coordinate di ogni sfera
@@ -87,6 +92,45 @@ def optimize_distance(spheres):
     )
     return result.x
 
+
+# Funzione che ricava l'errore che avrei con un numero di APs diverso
+def get_error_with_different_number_of_aps(spheres):
+    #ora lancio optimize_distances with every possibile subset of spheres and calculate the distance between it and the ground truth
+    sphere_subsets = all_subsets_except_single_and_full(spheres) 
+
+    #calcolo il punto che ottimizza la distanza per ogni sottoinsieme di sfere e lo salvo in un dizionario con chiave il numero di sfere nel sottoinsieme
+    error_per_subset_dimension = {} #array che conterrà la distanza media tra il punto stimato e la ground truth per ogni numero di sfere nel sottoinsieme
+    previous_subset_dimension = 0 #variabile che mi serve per capire se sto affrontando un sottoinsieme di dimensione diversa da quelli precedenti
+    number_of_subsets_of_previous_dimension = 0 #contatore di sottoinsiemi di dimensione precedente. serve per poi fare la media
+
+    for subset in sphere_subsets:
+        #il punto stimato per il sottoinsieme che sto considerando
+        estimated_point_per_subset = optimize_distance(subset)
+
+        #se è la prima volta che affronto un sottoinsieme di dimensione diversa da quelli precedenti, inizializzo il dizionario
+        if(len(subset) != previous_subset_dimension):
+            #calcolo la distanza media per il numero di sfere del sottoinsieme precedente
+            if(number_of_subsets_of_previous_dimension != 0):
+                error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
+
+            previous_subset_dimension = len(subset) #qui la parola "previous" è fuorviante, perché in realtà è il numero di sfere del sottoinsieme che sto considerando
+            error_per_subset_dimension[len(subset)] = 0 #inizializzo la distanza media per il numero attuale di sfere per sottoinsieme
+            number_of_subsets_of_previous_dimension = 0 #inizializzo il contatore di sottoinsiemi per questa nuova cardinalità di sottoinsiemi
+
+        #mi vado a salvare la distanza tra il punto stimato e la ground truth in un dizionario che come chiave ha il numero di sfere nel sottoinsieme
+        error_per_subset_dimension[len(subset)] += np.linalg.norm(estimated_point_per_subset - np.array([client_coordinates["x"], client_coordinates["y"], client_coordinates["z"]]))
+
+        number_of_subsets_of_previous_dimension += 1
+
+
+    #calcolo la distanza media per l'ultimo numero di sfere (non viene calcolata nel ciclo for)
+    error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
+
+    #printo il dizionario
+    print(error_per_subset_dimension)
+
+    return error_per_subset_dimension
+
 #----------------------------------MAIN----------------------------------
 
 #controllo argomenti passati da linea di comando
@@ -95,16 +139,22 @@ check_args()
 #crea la lista di sfere
 spheres = get_spheres_from_json(sys.argv[1], sys.argv[2])
 
+
+print();
+
 # Calcolo del punto più probabile di intersezione delle sfere
-intersection_point = optimize_distance(spheres)
-print("Estimated point:", intersection_point)
-print("Real point: [4.44, 2, 0.93]")
+estimated_point = optimize_distance(spheres)
+print("Estimated point:", estimated_point)
+client_coordinates = get_ground_truth(sys.argv[1])
+print("Real point: [",client_coordinates["x"],", ",client_coordinates["y"],", ",client_coordinates["z"],"]")
 
-#print point to point distance between the estimated point and (4.44, 2, 0.93)
-print("Distanza tra il punto stimato e la ground truth: ", np.linalg.norm(intersection_point - np.array([4.44, 2, 0.93])))
+print ()
 
+#calcolo l'errore che avrei con un numero di APs diverso
+print("Errore medio considerando solo n access points per volta:")
+error_per_subset_dimension = get_error_with_different_number_of_aps(spheres)
 
-#----------------------------------PLOT----------------------------------
+#----------------------------------PLOT ESTIMATED POINT----------------------------------
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -114,11 +164,10 @@ for sphere in spheres:
     ax.scatter(sphere.x, sphere.y, sphere.z, c='blue', marker='o')
 
 # plot del client prendendo la ground truth dal file
-client_coordinates = get_ground_truth(sys.argv[1])
 ax.scatter(client_coordinates["x"], client_coordinates["y"], client_coordinates["z"], c='green', marker='o')
 
 # Plot del punto stimato come "x" rossa
-ax.scatter(intersection_point[0], intersection_point[1], intersection_point[2], c='red', marker='x')
+ax.scatter(estimated_point[0], estimated_point[1], estimated_point[2], c='red', marker='x')
 
 # Etichette degli assi
 ax.set_xlabel('X')
@@ -126,3 +175,5 @@ ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 
 plt.show()
+
+#----------------------------------END----------------------------------
