@@ -1,7 +1,9 @@
 $host_ = "192.168.1.201"
 $user_ = "root"
 $pass_ = ""
-$command = "./Experiments/fede_measurements.sh" #TODO: modifica fede measurements in modo che prenda in input il numero identificativo del router a cui ci si sta connettendo
+$command = "./Experiments/fede_measurements.sh" 
+	#TODO: modifica fede measurements in modo che prenda in input il numero identificativo del router a cui ci si sta connettendo
+	#TODO: se fede_measurements_v2 non funziona, fatti passare direttaemente a questo file l'identificativo del router a cui vuoi collegarti. Poi basta richiamare il fede_measurements_X.sh di riferimento modificando $command
 $remote_folder_path = "/tmp"
 $local_folder_path = "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-mD-Track\Example_data" #TODO: generalizza
 $mdTrack_filename = "Example"
