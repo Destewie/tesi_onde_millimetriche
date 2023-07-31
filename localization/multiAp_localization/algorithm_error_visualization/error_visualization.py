@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import os
 
 #-----------------------------------FUNCTIONS----------------------------------#
 
@@ -22,6 +23,12 @@ def check_args():
 
     return sys.argv[1]
 
+# Funzione per salvare il plot
+def save_plot(plot, file_name):
+    folder_path = os.path.dirname(sys.argv[1])
+    file_path = os.path.join(folder_path, file_name)
+    plot.savefig(file_path)
+
 #-------------------------------------MAIN-------------------------------------#
 
 # Controllo gli argomenti passati da linea di comando
@@ -37,7 +44,11 @@ plt.xlabel('Number of Access Points considered')
 plt.ylabel('Average error (m)')
 plt.title('Average error in meters for each number of Access Points considered')
 
+#salvo il grafico nella stessa cartella del file json
+save_plot(plt, "error_visualization.png")
+
 # Mostro il grafico
 plt.show()
+
 
 #-------------------------------------END--------------------------------------#
