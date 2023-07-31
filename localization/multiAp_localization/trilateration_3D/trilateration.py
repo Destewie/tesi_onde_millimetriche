@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from itertools import combinations, chain
 
+#----------------------------------CONSTANTS--------------------------------------
+# Dimensione della stanza
+X_ROOM = 6.442
+Y_ROOM = 7.245
+Z_ROOM = 2.64
+
 #----------------------------------CLASS----------------------------------
 class Sphere:
     def __init__(self, x, y, z, radius):
@@ -185,6 +191,12 @@ ax.scatter(estimated_point[0], estimated_point[1], estimated_point[2], c='red', 
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
+
+# Opzionale: Imposta i limiti degli assi
+ax.set_xlim([0, X_ROOM])  # Sostituisci xmin e xmax con i limiti dell'asse X
+ax.set_ylim([0, Y_ROOM])  # Sostituisci ymin e ymax con i limiti dell'asse Y
+ax.set_zlim([0, Z_ROOM])  # Sostituisci zmin e zmax con i limiti dell'asse Z
+
 
 plt.show()
 
