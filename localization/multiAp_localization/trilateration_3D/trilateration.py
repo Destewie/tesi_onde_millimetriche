@@ -48,10 +48,10 @@ def all_subsets_except_single_and_full(set_elements):
 # - prende come input due file json che vengono passati da linea di comano: il primo definisce i raggi delle sfere, mentre il secondo contiene le coordinate di ogni sfera
 # - restituisce una lista di oggetti di tipo Sphere
 def get_spheres_from_json(measures_file, coordinates_file):
-    with open(measures_file) as f:
-        data_m = json.load(f)
-    with open(coordinates_file) as f:
-        coordinates = json.load(f)
+    with open(measures_file) as m:
+        data_m = json.load(m)
+    with open(coordinates_file) as c:
+        coordinates = json.load(c)
 
     #prendo il vettore delle misure dal file
     measures = data_m["measures"]
