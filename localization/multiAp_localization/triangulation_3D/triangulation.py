@@ -97,6 +97,24 @@ def get_rays(measures_file):
 
     return rays
 
+# Funzione per plottare i raggi
+def plot_rays(ax, starting_x, starting_y, starting_z, rays, ray_length, ray_tilt, unset_threshold, color):
+    start_point = np.array([starting_x, starting_y, starting_z])
+    for ray in rays:
+        if(unset_threshold or ray.power > POWER_THRESHOLD):
+            #converto angoli
+            azimuth_rad = np.radians(-ray.azimuth + ray_tilt) #tocca fare un po' di magheggi se voglio che il plot rispecchi la realtà
+            elevation_rad = np.radians(ray.elevation) 
+
+            #calcolo punto di arrivo del raggio considerando che il client è inclinato di alpha rispetto al piano orizzontale
+            end_point = start_point + ray_length * np.array([np.cos(azimuth_rad) * np.cos(elevation_rad), 
+                                                              np.sin(azimuth_rad) * np.cos(elevation_rad), 
+                                                              np.sin(elevation_rad)]) 
+
+            #plotto il raggio con spessore in base alla power
+            ax.plot([start_point[0], end_point[0]], [start_point[1], end_point[1]], [start_point[2], end_point[2]], c=color, linewidth=3*ray.power)
+
+
 
 # Funzione per la distanza router - raggio con lo stesso id (va usata una funzione di distanza per punto - retta, in cui il segmento che identifica la distanza è sempre perpendicolare alla retta)
 def distance_router_ray(router, starting_point, ending_point):
@@ -194,28 +212,22 @@ ax = fig.add_subplot(111, projection='3d')
 for r in routers:
     ax.scatter(r.x, r.y, r.z, c='blue', marker='o')
 
+
 #plotto i veri raggi derivanti dalle misure partendo dal client
-start_point = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
-for ray in rays:
-    #converto angoli
-    azimuth_rad = np.radians(-ray.azimuth - real_client_coordinates["tilt"] + ANGLE_OFFSET) #tocca fare un po' di magheggi se voglio che il plot rispecchi la realtà
-    elevation_rad = np.radians(ray.elevation)
-
-    line_length = 15 
-
-    #calcolo punto di arrivo del raggio considerando che il client è inclinato di alpha rispetto al piano orizzontale
-    end_point = start_point + line_length * np.array([np.cos(azimuth_rad) * np.cos(elevation_rad), 
-                                                      np.sin(azimuth_rad) * np.cos(elevation_rad), 
-                                                      np.sin(elevation_rad)]) 
-
-    #plotto il raggio con spessore in base alla power
-    ax.plot([start_point[0], end_point[0]], [start_point[1], end_point[1]], [start_point[2], end_point[2]], c='green', linewidth=3*ray.power)
+plot_rays(ax, real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], 
+          rays, 15, -real_client_coordinates["tilt"]+ANGLE_OFFSET, 1, 'green')
 
 #plotto il vero client
 ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], c='green', marker='o')
 
+
+#plotto i raggi con l'angolo di inclinazione ottenuto dalla minimizzazione facendoli partire dalla posizione stimata del client
+plot_rays(ax, x, y, z, rays, 15, alpha, 0, 'red')
+
 #plotto il client stimato
 ax.scatter(x, y, z, c='red', marker='x')
+
+
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
