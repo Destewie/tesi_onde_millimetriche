@@ -17,8 +17,8 @@ def read_from_file(path):
 # Funzione che controlla gli argomenti passati da linea di comando
 def check_args():
     # Controllo che il numero di argomenti sia corretto
-    if len(sys.argv) != 2:
-        print("Usage: python3 error_visualization.py <path_to_json>")
+    if len(sys.argv) != 3:
+        print("Usage: python3 error_visualization.py <path_to_json> <name_of_plot>")
         sys.exit(1)
 
     return sys.argv[1]
@@ -45,7 +45,7 @@ plt.ylabel('Average error (m)')
 plt.title('Average error in meters for each number of Access Points considered')
 
 #salvo il grafico nella stessa cartella del file json
-save_plot(plt, "error_visualization.png")
+save_plot(plt, sys.argv[2])
 
 # Mostro il grafico
 plt.show()
