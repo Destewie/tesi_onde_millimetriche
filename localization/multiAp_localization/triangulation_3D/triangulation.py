@@ -130,7 +130,13 @@ def distance_router_ray(router, starting_point, ending_point):
     return numerator / denominator
 
 # Funzione da minimizzare in cui sommo tutte le distanze tra i router e i raggi con lo stesso id
-def error_calculation(client, rays, routers):
+def error_calculation(client, rays, routers, display_distances=False):
+
+    #se il client è fuori dalla stanza, torna un errore infinito ed esci
+    if(client[0] < 0 or client[0] > X_ROOM or client[1] < 0 or client[1] > Y_ROOM or client[2] < 0 or client[2] > Z_ROOM):
+        return 10000
+
+
     #i raggi partono dalla posizione del client
     starting_point = np.array([client[0], client[1], client[2]]) #rispettivamente x, y, z
     line_length = 10 #la lunghezza è ininfluente ai fini del calcolo dell'errore
@@ -153,7 +159,12 @@ def error_calculation(client, rays, routers):
             #calcolo la distanza tra il router e il raggio con lo stesso id
             for router in routers:
                 if(router.id == ray.id):
-                    error += distance_router_ray(router, starting_point, ending_point)
+                    #devo pesare il nuovo errore in base alla power del raggio
+                    error += distance_router_ray(router, starting_point, ending_point) * ray.power**3
+
+                    if(display_distances):
+                        print("errore tra il router " + router.id + " e il raggio " + ray.id + " = " + str(distance_router_ray(router, starting_point, ending_point)))
+
                     break
 
     return error
@@ -174,7 +185,6 @@ def minimize_error(client, rays, routers):
 
     return x, y, z, alpha
 
-
 #----------------------------------MAIN---------------------------------
 
 #controllo argomenti
@@ -189,16 +199,30 @@ routers = get_routers(sys.argv[2])
 #recupero lista dei raggi
 rays = get_rays(sys.argv[1])
 
+print()
+
+#printo la vera posizione del client
+print("Vera posizione del client: " + str(real_client_coordinates))
+
+#voglio misurare l'errore reale delle misure (solo quelle che superano il threshold di potenza)
+adattamento_numpy_di_client = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], -real_client_coordinates["tilt"]+ANGLE_OFFSET])
+print("Errore delle vere misure: " + str(error_calculation(adattamento_numpy_di_client, rays, routers, True)))
+
+print()
 
 #minimizzo l'errore
 client = Client(0, 0, 0, 0)
 x, y, z, alpha = minimize_error(client, rays, routers)
 
 #stampo le coordinate del punto in cui l'errore è minimo
-print("Coordinate: " + str(x) + " " + str(y) + " " + str(z))
+print("Coordinate stimate: " + str(x) + " " + str(y) + " " + str(z))
+
+# stampo l'errore tra ogni raggio che ha partenza dal punto stimato e il relativo router
+adattamento_numpy_del_client_stimato = np.array([x, y, z, alpha])
+print("Errore stimato: " + str(error_calculation(adattamento_numpy_del_client_stimato, rays, routers, True)))
 
 #stampo l'errore minimo inteso come la distanza tra il punto in cui l'errore è minimo e il punto in cui si trova il client
-print("Errore: " + str(np.linalg.norm(np.array([x, y, z]) - np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]))))
+print("Distanza client <-> stima (m): " + str(np.linalg.norm(np.array([x, y, z]) - np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]))))
 
 
 
