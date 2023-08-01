@@ -9,6 +9,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from itertools import combinations, chain
 
 #----------------------------------CONSTANTS--------------------------------------
+
+# costante per un threshold sotto il quale il raggio non viene considerato
+POWER_THRESHOLD = 0.25
+
 #angolo in gradi per ruotare sempre i raggi in modo che gli 0 gradi siano paralleli all'asse Y
 ANGLE_OFFSET = 90
 
@@ -20,12 +24,13 @@ Z_ROOM = 2.64
 #----------------------------------CLASSES---------------------------------
 
 class Ray:
-    def __init__(self, id, azimuth, elevation, length, power):
+    def __init__(self, id, azimuth, elevation, length, power, reliable_distance):
         self.id = id #ogni raggio appartiene ad un router
         self.azimuth = azimuth 
         self.elevation = elevation
         self.length = length
         self.power = power #lo userò come peso per il calcolo delle coordinate
+        self.reliable_distance = reliable_distance #true se posso fidarmi della distanza
         
 
 class Router:
@@ -81,13 +86,13 @@ def get_real_client_position(measures_file):
 
 
 # Funzione che crea la lista dei raggi
-def get_rays(measures_file, client_tilt):
+def get_rays(measures_file):
     with open(measures_file) as f:
         data_m = json.load(f)
 
     rays = []
     for ray in data_m["measures"]:
-        r = Ray(ray["ap_id"], ray["azimuthAngle"], ray["elevationAngle"] , ray["distance"], ray["power"])
+        r = Ray(ray["ap_id"], ray["azimuthAngle"], ray["elevationAngle"] , ray["distance"], ray["power"], ray["distance_reliability"])
         rays.append(r)
 
     return rays
@@ -128,6 +133,34 @@ def differenza_angoli(angolo1, angolo2):
     
     return -diff_gradi
 
+# Funzione che calcola la distanza tra il punto in input e tutti gli end point dei raggi
+def distance_from_endpoints(point, routers):
+    distances = 0
+    for router in routers:
+        if(router.ray.power >= POWER_THRESHOLD and router.ray.reliable_distance):
+            distances += (np.linalg.norm(point - router.get_ray_end_point()))
+    return distances
+
+
+# Error function to be minimized
+def error_function(estimated_client, routers):
+    #l'errore è la somma delle distanze tra la posizione stimata e il l'end point di ogni raggio
+    error = 0
+    for router in routers:
+        if(router.ray.power >= POWER_THRESHOLD and router.ray.reliable_distance):
+            error += np.linalg.norm(estimated_client - router.get_ray_end_point()) * router.ray.power
+    return error
+
+# Funzione che mi restituisce la posizione stimata del client tramite la funzione minimize di scipy
+def estimate_client_position(routers):
+    #inizializzo la posizione stimata del client
+    estimated_client = np.array([0, 0, 0])
+    #minimizzo la funzione di errore
+    result = minimize(error_function, estimated_client, args=(routers), method='BFGS')
+    #restituisco la posizione stimata del client
+    return result.x
+
+
 
 #----------------------------------MAIN----------------------------------
 
@@ -142,7 +175,7 @@ routers_file = sys.argv[2]
 real_client_coordinates = get_real_client_position(measures_file)
 
 #prendo i raggi
-rays = get_rays(measures_file, real_client_coordinates["tilt"])
+rays = get_rays(measures_file)
 
 #prendo i router
 routers = get_routers(routers_file, rays)
@@ -151,6 +184,27 @@ print()
 
 #printo la vera posizione del client
 print("Vera posizione del client: " + str(real_client_coordinates))
+
+#calcolo la distanza totale tra la vera posizione e tutti gli endpoint dei raggi
+print("Distanza totale tra la vera posizione e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]), routers)))
+
+
+print()
+
+#stimo la posizione del client
+estimated_client = estimate_client_position(routers)
+print("Posizione stimata del client: " + str(estimated_client))
+
+#calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
+print("Distanza totale tra la posizione stimata e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(estimated_client, routers)))
+
+print()
+
+#calcolo l'errore tra la posizione stimata e quella vera stando attento ai tipi dei dati
+np_client_coordinates = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
+np_estimated_position = np.array(estimated_client)
+error = np.linalg.norm(np_client_coordinates - np_estimated_position)
+print("Errore di approssimazione: " + str(error))
 
 #----------------------------------3D PLOT----------------------------------
 
@@ -174,6 +228,8 @@ for router in routers:
 #plotto la vera posizione del client
 ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
 
+#plotto la posizione stimata del client
+ax.scatter(estimated_client[0], estimated_client[1], estimated_client[2], color='red', marker='x')
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
