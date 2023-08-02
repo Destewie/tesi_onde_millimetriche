@@ -98,7 +98,7 @@ def get_rays(measures_file):
     return rays
 
 # Funzione che crea la lista dei router
-def get_routers(routers_file, rays):
+def get_routers(routers_file, rays, client_info):
     with open(routers_file) as f:
         routers_from_json = json.load(f)
 
@@ -107,7 +107,7 @@ def get_routers(routers_file, rays):
     for key in keys:
         for ray in rays:
             if ray.id == key:
-                r = Router(key, routers_from_json[key]["x"], routers_from_json[key]["y"], routers_from_json[key]["height"], routers_from_json[key]["tilt"], real_client_coordinates["tilt"], ray)
+                r = Router(key, routers_from_json[key]["x"], routers_from_json[key]["y"], routers_from_json[key]["height"], routers_from_json[key]["tilt"], client_info["tilt"], ray)
                 routers.append(r)
 
     return routers
@@ -244,7 +244,7 @@ real_client_coordinates = get_real_client_position(measures_file)
 rays = get_rays(measures_file)
 
 #prendo i router
-routers = get_routers(routers_file, rays)
+routers = get_routers(routers_file, rays, real_client_coordinates)
 
 print()
 
