@@ -1,7 +1,8 @@
+
 $host_ = "192.168.1.201"
 $user_ = "root"
 $pass_ = ""
-$command = "./Experiments/fede_measurements.sh" 
+$command = "./Experiments/fede_measurements_v2.sh" 
 	#TODO: modifica fede measurements in modo che prenda in input il numero identificativo del router a cui ci si sta connettendo
 	#TODO: se fede_measurements_v2 non funziona, fatti passare direttaemente a questo file l'identificativo del router a cui vuoi collegarti. Poi basta richiamare il fede_measurements_X.sh di riferimento modificando $command
 $remote_folder_path = "/tmp"
@@ -17,15 +18,15 @@ $path_matlab_file = "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-m
 # Import the Posh SSH module
 Import-Module -Name Posh-SSH
 
-$host_ = 9
 # Check if there is a parameter in input
 # If there is, it means that the user wants to connect to a specific router
+$ssid_num = 9
 if ($args.Length -eq 1) {
-	$host_ = $args[0]
+	$ssid_num = $args[0]
 }
 
 # concatenate the host with the command with a space in between
-$command = $command + ' ' + $host_
+$command = $command + ' ' + $ssid_num
 
 Try{
 	# Create an SSH session
