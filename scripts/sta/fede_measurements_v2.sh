@@ -47,7 +47,7 @@ echo "Starting with the csi measures..."
 eval "$command"
 echo "csi measures done!"
 
-command="~/Experiments/csi300_v3.sh /tmp/ftm_measurements_fede.txt $ssid '$mac_address'"
+command="~/Experiments/ftm10.sh /tmp/ftm_measurements_fede.txt $ssid '$mac_address'"
 echo $command
 echo "Starting with the ftm measures..."
 eval "$command"
