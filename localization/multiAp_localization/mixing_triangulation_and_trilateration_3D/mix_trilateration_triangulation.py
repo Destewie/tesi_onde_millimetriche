@@ -129,6 +129,18 @@ def all_subsets_except_single_elements(set_elements):
 def quality_test_router(router):
     return (router.ray.power >= POWER_THRESHOLD and router.ray.reliable_distance)
 
+# Funzione che, dati dei router, ritorna il punto medio degli endpoint dei loro raggi
+def get_midpoint_of_rays_endpoints(routers):
+    sum_x = 0
+    sum_y = 0
+    sum_z = 0
+    for router in routers:
+        endpoint = router.get_ray_end_point()
+        sum_x += endpoint[0]
+        sum_y += endpoint[1]
+        sum_z += endpoint[2]
+    return np.array([sum_x/len(routers), sum_y/len(routers), sum_z/len(routers)])
+
 
 # Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
 def differenza_angoli(angolo1, angolo2):
@@ -261,6 +273,11 @@ print()
 estimated_client = estimate_client_position(routers)
 print("Posizione stimata del client: " + str(estimated_client))
 
+#prendo il punto medio degli endpoint dei router di qualità
+quality_routers = get_reliable_routers(routers)
+punto_medio = get_midpoint_of_rays_endpoints(quality_routers)
+print("Punto medio degli endpoint dei router di qualità: " + str(punto_medio))
+
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
 print("Distanza totale tra la posizione stimata e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(estimated_client, routers)))
 
@@ -270,7 +287,10 @@ print()
 np_client_coordinates = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
 np_estimated_position = np.array(estimated_client)
 error = np.linalg.norm(np_client_coordinates - np_estimated_position)
-print("Errore di approssimazione: " + str(error))
+print("Errore di approssimazione dalla minimizzazione: " + str(error))
+
+#calcolo la differenza tra la media degli endpoints e il cilent reale
+print("Distanza tra la media degli endpoints e il client reale: " + str(np.linalg.norm(np_client_coordinates - punto_medio)))
 
 print()
 
@@ -306,6 +326,9 @@ ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_clie
 
 #plotto la posizione stimata del client
 ax.scatter(estimated_client[0], estimated_client[1], estimated_client[2], color='red', marker='x')
+
+#plotto il punto medio degli endpoint dei router di qualità
+ax.scatter(punto_medio[0], punto_medio[1], punto_medio[2], color='orange', marker='x')
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
