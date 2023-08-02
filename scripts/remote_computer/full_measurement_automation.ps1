@@ -17,8 +17,15 @@ $path_matlab_file = "C:\Users\feder\Documents\tesi_onde_millimetriche\MikroTik-m
 # Import the Posh SSH module
 Import-Module -Name Posh-SSH
 
-#create a pscredential object to avoid writing it down manually
-#$credential = New-Object System.Management.Automation.PSCredential ($user_, $pass_) #doesn't work!!
+$host_ = 9
+# Check if there is a parameter in input
+# If there is, it means that the user wants to connect to a specific router
+if ($args.Length -eq 1) {
+	$host_ = $args[0]
+}
+
+# concatenate the host with the command with a space in between
+$command = $command + ' ' + $host_
 
 Try{
 	# Create an SSH session
