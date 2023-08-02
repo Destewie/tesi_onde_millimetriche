@@ -173,9 +173,63 @@ def find_client_position(reliable_routers):
     #inizializzo la posizione del client
     client_position = np.array([0, 0, 0])
 
-    res = minimize(error_function, client_position, args=(reliable_routers), method='BFGS')
+    res = minimize(
+            lambda point: error_function(point, reliable_routers), 
+            client_position, 
+            method='BFGS'
+        )
 
     return res.x
+
+#calculate every possible subset of spheres, excluding all the subsets with only one element
+def all_subsets_except_single_elements(set_elements):
+    all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(2, len(set_elements)+1))
+    return all_subsets
+
+# Funzione che ricava l'errore che avrei con un numero di APs diverso
+def get_error_with_different_number_of_aps(routers, real_client_coordinates):
+    #ora lancio optimize_distances with every possibile subset of spheres and calculate the distance between it and the ground truth
+    router_subsets = all_subsets_except_single_elements(routers) 
+
+    #calcolo il punto che ottimizza la distanza per ogni sottoinsieme di sfere e lo salvo in un dizionario con chiave il numero di sfere nel sottoinsieme
+    error_per_subset_dimension = {} #array che conterrà la distanza media tra il punto stimato e la ground truth per ogni numero di sfere nel sottoinsieme
+    previous_subset_dimension = 0 #variabile che mi serve per capire se sto affrontando un sottoinsieme di dimensione diversa da quelli precedenti
+    number_of_subsets_of_previous_dimension = 0 #contatore di sottoinsiemi di dimensione precedente. serve per poi fare la media
+
+    for subset in router_subsets:
+        #il punto stimato per il sottoinsieme che sto considerando
+        estimated_point_per_subset = find_client_position(subset)
+        estimated_point_per_subset = np.array(estimated_point_per_subset)
+
+        #se è la prima volta che affronto un sottoinsieme di dimensione diversa da quelli precedenti, inizializzo il dizionario
+        if(len(subset) != previous_subset_dimension):
+            #calcolo la distanza media per il numero di sfere del sottoinsieme precedente
+            if(number_of_subsets_of_previous_dimension != 0):
+                error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
+
+            previous_subset_dimension = len(subset) #qui la parola "previous" è fuorviante, perché in realtà è il numero di sfere del sottoinsieme che sto considerando
+            error_per_subset_dimension[len(subset)] = 0 #inizializzo la distanza media per il numero attuale di sfere per sottoinsieme
+            number_of_subsets_of_previous_dimension = 0 #inizializzo il contatore di sottoinsiemi per questa nuova cardinalità di sottoinsiemi
+
+        #mi vado a salvare la distanza tra il punto stimato e la ground truth in un dizionario che come chiave ha il numero di sfere nel sottoinsieme
+        error_per_subset_dimension[len(subset)] += np.linalg.norm(estimated_point_per_subset - np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]))
+
+        number_of_subsets_of_previous_dimension += 1
+
+
+    #calcolo la distanza media per l'ultimo numero di sfere (non viene calcolata nel ciclo for)
+    error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
+
+    return error_per_subset_dimension
+
+# Funzione che salva nella stessa cartella del file delle misure un file json contenente il dizionario che gli viene passato
+def save_json(dictionary, measures_file):
+    folder_path = os.path.dirname(measures_file)
+    file_name = "triangulation_error_per_subset_dimension.json"
+
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'w') as outfile:
+        json.dump(dictionary, outfile)
 
 #----------------------------------MAIN----------------------------------
 
@@ -228,11 +282,20 @@ for router in routers:
 
 print ()
 
+
 #calcolo la distanza tra la vera posizione del client e la stima
 print("Distanza tra la vera posizione del client e la stima: " + str(np.linalg.norm(np_client_position - estimated_client_position)))
 
 
+print()
 
+#calcolo l'errore che avrei con un numero di APs diverso
+print("Errore medio considerando solo n access points per volta:")
+error_per_subset_dimension = get_error_with_different_number_of_aps(get_reliable_routers(routers), real_client_coordinates)
+print(error_per_subset_dimension)
+
+#salvo su un file json l'errore che avrei con un numero di APs diverso
+save_json(error_per_subset_dimension, sys.argv[1])
 
 
 #----------------------------------3D PLOT----------------------------------
