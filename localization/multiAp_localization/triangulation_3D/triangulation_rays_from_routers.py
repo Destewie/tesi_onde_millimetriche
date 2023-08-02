@@ -48,6 +48,9 @@ class Router:
     def adjust_ray_perspective(self):
         return ANGLE_OFFSET - self.tilt 
 
+    def get_ray_start_point(self):
+        return np.array([self.x, self.y, self.z])
+
     # Funzione che mi restituisce il punto finale del raggio che parte dal router
     # tieni a mente che il tilt va a modificare il valore dell'angolo di azimuth
     def get_ray_end_point(self):
@@ -146,7 +149,33 @@ def differenza_angoli(angolo1, angolo2):
     return -diff_gradi
 
 
+# Funzione per la distanza client - raggio 
+def distance_router_ray(client, ray_starting_point, ray_ending_point):
+    line_direction = ray_ending_point - ray_starting_point
+    point_to_line_start = client - ray_starting_point
 
+    cross_product = np.cross(line_direction, point_to_line_start)
+    numerator = np.linalg.norm(cross_product)
+    denominator = np.linalg.norm(line_direction)
+
+    return numerator / denominator
+
+# Funzione errore da minimizzare. Somma solo le distanze tra un punto e tutti i raggi di qualità
+def error_function(point, reliable_routers):
+    error = 0
+    for router in reliable_routers:
+        error += distance_router_ray(np.array([point[0], point[1], point[2]]), router.get_ray_start_point(), router.get_ray_end_point()) * router.ray.power
+
+    return error
+
+# Funzione che trova la posizione stimata del client minimizzando error_function
+def find_client_position(reliable_routers):
+    #inizializzo la posizione del client
+    client_position = np.array([0, 0, 0])
+
+    res = minimize(error_function, client_position, args=(reliable_routers), method='BFGS')
+
+    return res.x
 
 #----------------------------------MAIN----------------------------------
 
@@ -158,7 +187,8 @@ measures_file = sys.argv[1]
 routers_file = sys.argv[2]
 
 #prendo le coordinate reali del client
-real_client_coordinates = get_real_client_position(measures_file)
+real_client_coordinates = get_real_client_position(measures_file) #dizionario
+np_client_position = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]) #np array
 
 #prendo i raggi
 rays = get_rays(measures_file)
@@ -166,10 +196,42 @@ rays = get_rays(measures_file)
 #prendo i router
 routers = get_routers(routers_file, rays, real_client_coordinates)
 
+#prendo i router di qualità
+reliable_routers = get_reliable_routers(routers)
+
 print()
 
 #printo la vera posizione del client
 print("Vera posizione del client: " + str(real_client_coordinates))
+#calcolo l'errore complessivo delle misure
+adattamento_posizione_client = [real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]
+print("Errore complessivo delle misure (solo router di qualità): " + str(error_function(adattamento_posizione_client, reliable_routers)))
+
+# calcolo la distanza tra la vera posizione del client e ogni raggio
+for router in routers:
+    router.distance = distance_router_ray(np_client_position, router.get_ray_start_point(), router.get_ray_end_point())
+    print("Distanza tra il client e il raggio " + str(router.id) + ": " + str(router.distance))
+
+
+print()
+
+
+#trovo la posizione stimata del client
+estimated_client_position = find_client_position(reliable_routers)
+np_estimated_position = np.array([estimated_client_position[0], estimated_client_position[1], estimated_client_position[2]])
+print("Posizione stimata del client: " + str(estimated_client_position))
+
+#calcola la distanza tra la stima e tutti i raggi
+for router in routers:
+    router.distance = distance_router_ray(np_estimated_position, router.get_ray_start_point(), router.get_ray_end_point())
+    print("Distanza tra la stima e il raggio " + str(router.id) + ": " + str(router.distance))
+
+print ()
+
+#calcolo la distanza tra la vera posizione del client e la stima
+print("Distanza tra la vera posizione del client e la stima: " + str(np.linalg.norm(np_client_position - estimated_client_position)))
+
+
 
 
 
@@ -191,6 +253,9 @@ for router in routers:
 
 #plotto la vera posizione del client
 ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
+
+#plotto la stima della posizione del client
+ax.scatter(estimated_client_position[0], estimated_client_position[1], estimated_client_position[2], color='red', marker='x')
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
