@@ -1,0 +1,3 @@
+
+[ 1061.988441] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 5377030044, 142735368, 151443456, 5387602860
+[ 1063.089798] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 5478449052, 3074267736, 3083452416, 5489498088

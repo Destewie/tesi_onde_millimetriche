@@ -1,0 +1,6 @@
+{ 
+	"azimuthAngle":76, 
+	"elevationAngle":26, 
+	"power":0.20279, 
+	"distance":4.0647 
+}
