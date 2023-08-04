@@ -39,20 +39,15 @@ class Router:
         self.x = x
         self.y = y
         self.z = z
-        self.client_tilt = client_tilt #lo uso per aggiustare l'orientamento del raggio
+        self.client_tilt = client_tilt #lo uso per aggiustare l'orientamento del raggio. Anche lui ha bisongo dell'aggiustamento per il sistema di riferimento comune
         self.tilt = tilt
         self.ray = ray
-
-    # angle_offset porta solo ad avere un sistema di riferimento con gli 0 gradi paralleli all'asse Y
-    # self.tilt serve per routare i router in modo da rispettare la realtà. (viene messo un - davanti perchè il tilt è negativo)
-    def adjust_ray_perspective(self):
-        return ANGLE_OFFSET - self.tilt 
 
     # Funzione che mi restituisce il punto finale del raggio che parte dal router
     # tieni a mente che il tilt va a modificare il valore dell'angolo di azimuth
     def get_ray_end_point(self):
-        base_angle_for_router = self.adjust_ray_perspective()
-        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, self.client_tilt)
+        base_angle_for_router = adattamento_angolo(self.tilt)
+        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, adattamento_angolo(self.client_tilt)+180)
         azimuth_rad = np.radians(base_angle_for_router + azimuth_diff_ap_client - self.ray.azimuth)
         elevation_rad = np.radians(-self.ray.elevation)
         x = self.x + self.ray.length * np.cos(azimuth_rad) * np.cos(elevation_rad)
@@ -76,6 +71,10 @@ def check_args():
     if not os.path.exists(sys.argv[2]):
         print("Il file json delle posizioni dei router non esiste")
         exit(1)
+
+# Funzione che trasforma un qualsiasi angolo in gradi centigradi in un nuovo angolo in gradi centigradi che rispetti il sistema di riferimento che voglio io
+def adattamento_angolo(angolo):
+    return ANGLE_OFFSET - angolo
 
 # Funzione che mi prende la ground truth (vere coordinate) del client dal file delle misure
 def get_real_client_position(measures_file):
@@ -258,6 +257,7 @@ rays = get_rays(measures_file)
 #prendo i router
 routers = get_routers(routers_file, rays, real_client_coordinates)
 
+
 print()
 
 #printo la vera posizione del client
@@ -323,6 +323,13 @@ for router in routers:
 
 #plotto la vera posizione del client
 ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
+
+#plotto una linea lunga uno che parte dal client, è parallela al piano x-y e punta verso client.tilt
+#usa real_client_coordinates["tilt"] per capire il punto finale della linea
+x = [real_client_coordinates["x"], real_client_coordinates["x"] + math.cos(math.radians(-real_client_coordinates["tilt"] + ANGLE_OFFSET))]
+y = [real_client_coordinates["y"], real_client_coordinates["y"] + math.sin(math.radians(-real_client_coordinates["tilt"] + ANGLE_OFFSET))]
+z = [real_client_coordinates["z"], real_client_coordinates["z"]]
+ax.plot(x, y, z, color='green')
 
 #plotto la posizione stimata del client
 ax.scatter(estimated_client[0], estimated_client[1], estimated_client[2], color='red', marker='x')
