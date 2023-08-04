@@ -254,6 +254,7 @@ reliable_routers = get_reliable_routers(routers)
 
 print()
 
+print("----------------------------CLIENT INFO----------------------------")
 #printo la vera posizione del client
 print("Vera posizione del client: " + str(real_client_coordinates))
 #calcolo l'errore complessivo delle misure
@@ -268,7 +269,7 @@ for router in routers:
 
 print()
 
-
+print("----------------------------ESTIMATED POINT INFO----------------------------")
 #trovo la posizione stimata del client
 estimated_client_position = find_client_position(reliable_routers)
 np_estimated_position = np.array([estimated_client_position[0], estimated_client_position[1], estimated_client_position[2]])
@@ -288,6 +289,7 @@ print("Distanza tra la vera posizione del client e la stima: " + str(np.linalg.n
 
 print()
 
+print("----------------------------OTHER INFO----------------------------")
 #calcolo l'errore che avrei con un numero di APs diverso
 print("Errore medio considerando solo n access points per volta:")
 error_per_subset_dimension = get_error_with_different_number_of_aps(get_reliable_routers(routers), real_client_coordinates)
