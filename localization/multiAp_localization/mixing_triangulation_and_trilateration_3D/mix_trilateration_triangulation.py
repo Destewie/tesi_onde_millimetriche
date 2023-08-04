@@ -209,8 +209,7 @@ def get_error_with_different_number_of_aps(routers, real_client_coordinates):
 
     for subset in router_subsets:
         #il punto stimato per il sottoinsieme che sto considerando
-        estimated_point_per_subset = estimate_client_position(subset)
-        estimated_point_per_subset = np.array(estimated_point_per_subset)
+        estimated_point_per_subset = get_weighted_midpoint_of_rays_endpoints(subset)
 
         #se è la prima volta che affronto un sottoinsieme di dimensione diversa da quelli precedenti, inizializzo il dizionario
         if(len(subset) != previous_subset_dimension):
@@ -226,7 +225,6 @@ def get_error_with_different_number_of_aps(routers, real_client_coordinates):
         error_per_subset_dimension[len(subset)] += np.linalg.norm(estimated_point_per_subset - np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]))
 
         number_of_subsets_of_previous_dimension += 1
-
 
     #calcolo la distanza media per l'ultimo numero di sfere (non viene calcolata nel ciclo for)
     error_per_subset_dimension[previous_subset_dimension] /= number_of_subsets_of_previous_dimension
@@ -310,6 +308,7 @@ print()
 print("--------------------OTHER STATS---------------------")
 
 #calcolo l'errore che avrei con un numero di APs diverso
+print("Per questa misura considero come stima il punto medio pesato")
 print("Errore medio considerando solo n access points per volta:")
 error_per_subset_dimension = get_error_with_different_number_of_aps(get_reliable_routers(routers), real_client_coordinates)
 print(error_per_subset_dimension)
