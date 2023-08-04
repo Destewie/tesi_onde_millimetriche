@@ -128,17 +128,21 @@ def all_subsets_except_single_elements(set_elements):
 def quality_test_router(router):
     return (router.ray.power >= POWER_THRESHOLD and router.ray.reliable_distance)
 
-# Funzione che, dati dei router, ritorna il punto medio degli endpoint dei loro raggi
-def get_midpoint_of_rays_endpoints(routers):
-    sum_x = 0
-    sum_y = 0
-    sum_z = 0
+# Funzione che calcola il punto medio pesato degli estremi dei raggi. Questa funzione tenderà ad avvicinare il punto medio all'endpoint dei raggi con potenza maggiore
+def get_weighted_midpoint_of_rays_endpoints(routers):
+    sum_of_weights = 0
+    sum_of_weighted_endpoints = np.array([0.0, 0.0, 0.0])
+    print()
     for router in routers:
+        sum_of_weights += router.ray.power
         endpoint = router.get_ray_end_point()
-        sum_x += endpoint[0]
-        sum_y += endpoint[1]
-        sum_z += endpoint[2]
-    return np.array([sum_x/len(routers), sum_y/len(routers), sum_z/len(routers)])
+        sum_of_weighted_endpoints[0] += float(router.ray.power) * float(endpoint[0])
+        sum_of_weighted_endpoints[1] += router.ray.power * endpoint[1]
+        sum_of_weighted_endpoints[2] += router.ray.power * endpoint[2]
+    sum_of_weighted_endpoints[0] = sum_of_weighted_endpoints[0] / sum_of_weights
+    sum_of_weighted_endpoints[1] = sum_of_weighted_endpoints[1] / sum_of_weights
+    sum_of_weighted_endpoints[2] = sum_of_weighted_endpoints[2] / sum_of_weights
+    return sum_of_weighted_endpoints
 
 
 # Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
@@ -260,28 +264,22 @@ routers = get_routers(routers_file, rays, real_client_coordinates)
 
 print()
 
+print("---------------------REAL CLIENT INFO---------------------")
+
 #printo la vera posizione del client
 print("Vera posizione del client: " + str(real_client_coordinates))
 
 #calcolo la distanza totale tra la vera posizione e tutti gli endpoint dei raggi
+print("Quella che segue non so se può essere giustamente interpretata come una misura di errore hardware:")
 print("Distanza totale tra la vera posizione e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]), routers)))
 
 
 print()
 
+print("---------------------ESTIMATED CLIENT INFO (MINIMIZATION)---------------------")
 #stimo la posizione del client
 estimated_client = estimate_client_position(routers)
 print("Posizione stimata del client: " + str(estimated_client))
-
-#prendo il punto medio degli endpoint dei router di qualità
-quality_routers = get_reliable_routers(routers)
-punto_medio = get_midpoint_of_rays_endpoints(quality_routers)
-print("Punto medio degli endpoint dei router di qualità: " + str(punto_medio))
-
-#calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
-print("Distanza totale tra la posizione stimata e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(estimated_client, routers)))
-
-print()
 
 #calcolo l'errore tra la posizione stimata e quella vera stando attento ai tipi dei dati
 np_client_coordinates = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
@@ -289,10 +287,27 @@ np_estimated_position = np.array(estimated_client)
 error = np.linalg.norm(np_client_coordinates - np_estimated_position)
 print("Errore di approssimazione dalla minimizzazione: " + str(error))
 
-#calcolo la differenza tra la media degli endpoints e il cilent reale
-print("Distanza tra la media degli endpoints e il client reale: " + str(np.linalg.norm(np_client_coordinates - punto_medio)))
+#calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
+print("Distanza totale tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(estimated_client, routers)))
 
 print()
+
+print("---------------------ESTIMATED CLIENT INFO (WEIGHTED AVERAGE)---------------------")
+
+#prendo il punto medio degli endpoint dei router di qualità
+quality_routers = get_reliable_routers(routers)
+punto_medio = get_weighted_midpoint_of_rays_endpoints(quality_routers)
+print("Posizione stimata del client: " + str(punto_medio))
+
+#calcolo la differenza tra la media degli endpoints e il cilent reale
+print("Errore di approssimazione della media pesata: " + str(np.linalg.norm(np_client_coordinates - punto_medio)))
+
+#calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
+print("Distanza totale tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(punto_medio, routers)))
+
+print()
+
+print("--------------------OTHER STATS---------------------")
 
 #calcolo l'errore che avrei con un numero di APs diverso
 print("Errore medio considerando solo n access points per volta:")
