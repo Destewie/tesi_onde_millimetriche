@@ -43,10 +43,6 @@ class Router:
         self.tilt = tilt
         self.ray = ray
 
-        # angle_offset porta solo ad avere un sistema di riferimento con gli 0 gradi paralleli all'asse Y
-    # self.tilt serve per routare i router in modo da rispettare la realtà. (viene messo un - davanti perchè il tilt è negativo)
-    def adjust_ray_perspective(self):
-        return ANGLE_OFFSET - self.tilt 
 
     def get_ray_start_point(self):
         return np.array([self.x, self.y, self.z])
@@ -54,8 +50,8 @@ class Router:
     # Funzione che mi restituisce il punto finale del raggio che parte dal router
     # tieni a mente che il tilt va a modificare il valore dell'angolo di azimuth
     def get_ray_end_point(self):
-        base_angle_for_router = self.adjust_ray_perspective()
-        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, self.client_tilt)
+        base_angle_for_router = adattamento_angolo(self.tilt) 
+        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, adattamento_angolo(self.client_tilt)+180)
         azimuth_rad = np.radians(base_angle_for_router + azimuth_diff_ap_client - self.ray.azimuth)
         elevation_rad = np.radians(-self.ray.elevation)
         x = self.x + RAY_LENGTH * np.cos(azimuth_rad) * np.cos(elevation_rad)
@@ -127,6 +123,9 @@ def get_reliable_routers(routers):
 def quality_test_router(router):
     return (router.ray.power >= POWER_THRESHOLD)
 
+# Funzione che trasforma un qualsiasi angolo in gradi centigradi in un nuovo angolo in gradi centigradi che rispetti il sistema di riferimento che voglio io
+def adattamento_angolo(angolo):
+    return ANGLE_OFFSET - angolo
 
 # Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
 def differenza_angoli(angolo1, angolo2):
