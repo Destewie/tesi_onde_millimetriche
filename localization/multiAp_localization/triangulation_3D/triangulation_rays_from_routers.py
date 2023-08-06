@@ -5,10 +5,12 @@ import os
 import json
 import math
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 from itertools import combinations, chain
+import functools
 
-#----------------------------------CONSTANTS--------------------------------------
+#----------------------------------CONSTANTS AND GLOBALS--------------------------------------
 
 # costante per un threshold sotto il quale il raggio non viene considerato
 POWER_THRESHOLD = 0.25
@@ -23,6 +25,9 @@ RAY_LENGTH = 20
 X_ROOM = 6.442
 Y_ROOM = 7.245
 Z_ROOM = 2.64
+
+#vettore vuoto da aggiornare nel tempo
+estimate_evolution = []
 
 #----------------------------------CLASSES---------------------------------
 
@@ -159,13 +164,17 @@ def distance_router_ray(client, ray_starting_point, ray_ending_point):
 
     return numerator / denominator
 
+
 # Funzione errore da minimizzare. Somma solo le distanze tra un punto e tutti i raggi di qualità
 def error_function(point, reliable_routers):
+    estimate_evolution.append(point) #aggiorno l'evoluzione del punto
+
     error = 0
     for router in reliable_routers:
         error += distance_router_ray(np.array([point[0], point[1], point[2]]), router.get_ray_start_point(), router.get_ray_end_point()) * router.ray.power
 
     return error
+
 
 # Funzione che trova la posizione stimata del client minimizzando error_function
 def find_client_position(reliable_routers):
@@ -180,10 +189,16 @@ def find_client_position(reliable_routers):
 
     return res.x
 
+
+def update_estimate_evolution(i):
+    return estimate_evolution
+
+
 #calculate every possible subset of spheres, excluding all the subsets with only one element
 def all_subsets_except_single_elements(set_elements):
     all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(2, len(set_elements)+1))
     return all_subsets
+
 
 # Funzione che ricava l'errore che avrei con un numero di APs diverso
 def get_error_with_different_number_of_aps(routers, real_client_coordinates):
@@ -221,6 +236,7 @@ def get_error_with_different_number_of_aps(routers, real_client_coordinates):
 
     return error_per_subset_dimension
 
+
 # Funzione che salva nella stessa cartella del file delle misure un file json contenente il dizionario che gli viene passato
 def save_json(dictionary, measures_file):
     folder_path = os.path.dirname(measures_file)
@@ -229,6 +245,10 @@ def save_json(dictionary, measures_file):
     file_path = os.path.join(folder_path, file_name)
     with open(file_path, 'w') as outfile:
         json.dump(dictionary, outfile)
+
+
+def plot_point(point, ax, color):
+    ax.scatter(point[0], point[1], point[2], marker='x', color=color)
 
 #----------------------------------MAIN----------------------------------
 
@@ -318,8 +338,16 @@ for router in routers:
 #plotto la vera posizione del client
 ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
 
-#plotto la stima della posizione del client
-ax.scatter(estimated_client_position[0], estimated_client_position[1], estimated_client_position[2], color='red', marker='x')
+#plotto la stima della posizione del client (big)
+ax.scatter(estimated_client_position[0], estimated_client_position[1], estimated_client_position[2], color='red', marker='x', s=50)
+
+#--------------- Animazione ---------------
+# Voglio animare la stima della posizione del client usando le posizioni salvate in estimate_evolution
+#ani = animation.FuncAnimation(fig, functools.partial(plot_point, ax=ax, color='orange'), frames=estimate_evolution, interval=100, blit=False, repeat=False)
+
+# Salvo l'animazione in un file gif
+#ani.save('animation.gif', writer='imagemagick', fps=1)
+
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
