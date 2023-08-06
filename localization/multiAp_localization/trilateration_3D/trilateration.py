@@ -43,6 +43,7 @@ def get_ground_truth(measures_file):
     with open(measures_file) as f:
         data_m = json.load(f)
     client_coordinates = data_m["client_ground_truth"]
+    client_coordinates = np.array([client_coordinates["x"], client_coordinates["y"], client_coordinates["z"]])
     return client_coordinates
     
 #calculate every possible subset of spheres, excluding all the subsets with only one element and the subset with all the elements
@@ -73,18 +74,24 @@ def get_spheres_from_json(measures_file, coordinates_file):
 
     return spheres 
 
-# Funzione di distanza tra un punto e una sfera
-def distance_from_point_to_sphere(point, sphere):
+# Funzione di distanza quadratica tra un punto e una sfera
+def squared_distance_point_sphere(point, sphere):
     center = np.array([sphere.x, sphere.y, sphere.z])
     dist_squared = abs(np.linalg.norm(point - center) - sphere.radius) ** 2
     return dist_squared
 
+# Funzione di distanza tra un punto e una sfera
+def distance_point_sphere(point, sphere):
+    center = np.array([sphere.x, sphere.y, sphere.z])
+    dist = abs(np.linalg.norm(point - center) - sphere.radius)
+    return dist
+
 
 # Funzione di distanza tra un punto e un insieme di sfere
-def distance_from_point_to_spheres(point, spheres):
+def custom_distance_point_all_spheres(dist_function, point, spheres):
     total_distance_squared = 0
     for sphere in spheres:
-        dist_squared = distance_from_point_to_sphere(point, sphere)
+        dist_squared = dist_function(point, sphere)
         total_distance_squared += dist_squared
     return total_distance_squared
 
@@ -92,7 +99,7 @@ def distance_from_point_to_spheres(point, spheres):
 # Funzione di ottimizzazione
 def optimize_distance(spheres):
     result = minimize(
-        lambda point: distance_from_point_to_spheres(point, spheres),
+        lambda point: custom_distance_point_all_spheres(squared_distance_point_sphere, point, spheres),
         x0=np.zeros(3),  # Punto iniziale (assumiamo un punto iniziale [0, 0, 0])
         method='BFGS',  # Metodo di ottimizzazione
     )
@@ -124,7 +131,7 @@ def get_error_with_different_number_of_aps(spheres, real_client_coordinates):
             number_of_subsets_of_previous_dimension = 0 #inizializzo il contatore di sottoinsiemi per questa nuova cardinalità di sottoinsiemi
 
         #mi vado a salvare la distanza tra il punto stimato e la ground truth in un dizionario che come chiave ha il numero di sfere nel sottoinsieme
-        error_per_subset_dimension[len(subset)] += np.linalg.norm(estimated_point_per_subset - np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]))
+        error_per_subset_dimension[len(subset)] += np.linalg.norm(estimated_point_per_subset - real_client_coordinates)
 
         number_of_subsets_of_previous_dimension += 1
 
@@ -153,17 +160,23 @@ check_args()
 #crea la lista di sfere
 spheres = get_spheres_from_json(sys.argv[1], sys.argv[2])
 
+print("---------------------CLIENT INFO---------------------")
+client_coordinates = get_ground_truth(sys.argv[1])
+print("Real point: ", client_coordinates)
+print("Errore delle misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, client_coordinates, spheres)))
+print("[L'errore qui sopra indica quanto le misure iniziali sono sbagliate]")
 
-print();
+print()
 
+print("---------------------ESTIMATE INFO---------------------")
 # Calcolo del punto più probabile di intersezione delle sfere
 estimated_point = optimize_distance(spheres)
 print("Estimated point:", estimated_point)
-client_coordinates = get_ground_truth(sys.argv[1])
-print("Real point: [",client_coordinates["x"],", ",client_coordinates["y"],", ",client_coordinates["z"],"]")
+print("Distanza client - posizione stimata: " + str(np.linalg.norm(client_coordinates - estimated_point)))
 
 print ()
 
+print("---------------------OTHER INFO---------------------")
 #calcolo l'errore che avrei con un numero di APs diverso
 print("Errore medio considerando solo n access points per volta:")
 error_per_subset_dimension = get_error_with_different_number_of_aps(spheres, client_coordinates)
@@ -182,7 +195,7 @@ for sphere in spheres:
     ax.scatter(sphere.x, sphere.y, sphere.z, c='blue', marker='o')
 
 # plot del client prendendo la ground truth dal file
-ax.scatter(client_coordinates["x"], client_coordinates["y"], client_coordinates["z"], c='green', marker='o')
+ax.scatter(client_coordinates[0], client_coordinates[1], client_coordinates[2], c='green', marker='o')
 
 # Plot del punto stimato come "x" rossa
 ax.scatter(estimated_point[0], estimated_point[1], estimated_point[2], c='red', marker='x')
