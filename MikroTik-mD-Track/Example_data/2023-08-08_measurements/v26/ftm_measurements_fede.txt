@@ -1,0 +1,5 @@
+
+[ 2879.548229] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 210141084, 97035540, 105695232, 220678884
+[ 2880.642732] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 311566236, 1956719400, 1965871104, 322595724
+[ 2881.747280] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 433008540, 2104474944, 2113615872, 444027300
+[ 2882.877667] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session
