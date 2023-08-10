@@ -42,10 +42,10 @@ class Measure:
     def calculate_endpoint(self, ap_info):
         base_angle_of_router = adattamento_angolo(ap_info["tilt"])
 
-        azimuth_diff_ap_client = differenza_angoli(base_angle_of_router, adattamento_angolo(self.client_tilt+180))
+        azimuth_diff_ap_client = differenza_angoli(base_angle_of_router, adattamento_angolo(self.client_tilt)+180)
             
         azimuth_rad = np.radians(base_angle_of_router + azimuth_diff_ap_client - self.azimuth_angle)
-        elevation_rad = np.radians(-self.azimuth_angle)
+        elevation_rad = np.radians(-self.elevation_angle)
 
         x = ap_info["x"] + self.distance * np.cos(azimuth_rad) * np.cos(elevation_rad)
         y = ap_info["y"] + self.distance * np.sin(azimuth_rad) * np.cos(elevation_rad)
@@ -95,7 +95,7 @@ def get_measures(measures_file_path):
     with open(measures_file_path) as json_file:
         measure_file_data = json.load(json_file)
         for measure in measure_file_data["measures"]:
-            measures.append( Measure(measure["client_tilt"], measure["azimuth_angle"], measure["elevation_angle"], measure["power"], measure["distance"]) )
+            measures.append( Measure(measure["client_tilt"], measure["azimuthAngle"], measure["elevationAngle"], measure["power"], measure["distance"]) )
         
     return measures
 
@@ -137,6 +137,7 @@ def calculate_distances_from_client(client_info, measures):
 
 
 #-------------------MAIN---------------------
+
 # Prendo le info del client
 client_info = get_client_info(get_measures_path())
 
@@ -200,7 +201,30 @@ ax.set_ylabel('Y')
 # Mostrare il grafico
 plt.show()
 
-#----------------------------------END----------------------------------
+
+#----------------------------------CDF PLOT----------------------------------
+
+# Organizza le misure in gruppi con lo stesso client_tilt
+grouped_measures = {}
+for measure in measures:
+    if abs(measure.client_tilt) not in grouped_measures:
+        grouped_measures[abs(measure.client_tilt)] = []
+    grouped_measures[abs(measure.client_tilt)].append(measure.distance_from_client)
+
+# Calcola l'ECDF per ciascun gruppo di misure
+plt.figure()
+for client_tilt, distances in grouped_measures.items():
+    n = len(distances)
+    x = np.sort(distances)
+    y = np.arange(1, n + 1) / n
+    plt.step(x, y, label=f'Client Tilt {client_tilt}')
+
+plt.xlabel('Distance from Client')
+plt.ylabel('% of measures of that type')
+plt.title('ECDF with Different Client Tilts')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
 
