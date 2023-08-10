@@ -1,0 +1,9 @@
+
+[ 6112.790092] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 4077180828, 142039392, 150693888, 4087716036
+[ 6112.834512] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session
+[ 6113.941169] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session
+[ 6116.613770] wil6210 0000:01:00.0 wlan0: wmi_evt_disconnect: Disconnect 08:55:31:9b:05:29 reason [proto 3 wmi 3]
+[ 6119.292787] wil6210 0000:01:00.0 wlan0: wmi_evt_disconnect: Disconnect 08:55:31:9b:05:29 reason [proto 3 wmi 3]
+[ 6127.294476] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 4797018012, 107426196, 116563968, 4808036496
+[ 6140.798795] wil6210 0000:01:00.0 wlan0: wmi_evt_disconnect: Disconnect 08:55:31:9b:05:29 reason [proto 3 wmi 3]
+[ 6145.512185] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 5563223964, 2675285508, 2684418048, 5574236928

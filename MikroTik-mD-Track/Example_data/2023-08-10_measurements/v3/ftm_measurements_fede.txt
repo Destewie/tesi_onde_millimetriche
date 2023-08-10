@@ -1,0 +1,6 @@
+
+[ 4084.231675] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 4095.053350] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 4097.733570] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 4103.492704] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 4106.129762] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
