@@ -23,6 +23,42 @@ X_ROOM = 6.442
 Y_ROOM = 7.245
 Z_ROOM = 2.64
 
+
+#-------------------CLASSES---------------------
+
+# Classe che rappresenta una misura
+class Measure:
+    def __init__(self, client_tilt, azimuth_angle, elevation_angle, power, distance):
+        self.client_tilt = client_tilt
+        self.azimuth_angle = azimuth_angle
+        self.elevation_angle = elevation_angle
+        self.power = power
+        self.distance = distance
+        self.endpoint = None
+        self.distance_from_client = None
+
+
+    # Funzione che mi calcola la distanza dal client
+    def calculate_endpoint(self, ap_info):
+        base_angle_of_router = adattamento_angolo(ap_info["tilt"])
+
+        azimuth_diff_ap_client = differenza_angoli(base_angle_of_router, adattamento_angolo(self.client_tilt+180))
+            
+        azimuth_rad = np.radians(base_angle_of_router + azimuth_diff_ap_client - self.azimuth_angle)
+        elevation_rad = np.radians(-self.azimuth_angle)
+
+        x = ap_info["x"] + self.distance * np.cos(azimuth_rad) * np.cos(elevation_rad)
+        y = ap_info["y"] + self.distance * np.sin(azimuth_rad) * np.cos(elevation_rad)
+        z = ap_info["height"] + self.distance * np.sin(elevation_rad)
+
+        self.endpoint = np.array([x, y, z])
+
+    # Funzione che mi calcola la distanza dal client
+    def calculate_distance_from_client(self, client_info: np.ndarray):
+        self.distance_from_client = np.linalg.norm(self.endpoint - client_info)
+
+
+
 #-------------------FUNCTIONS---------------------
 #ritorna il path di ap_info.json
 def get_ap_info_path():
@@ -59,7 +95,7 @@ def get_measures(measures_file_path):
     with open(measures_file_path) as json_file:
         measure_file_data = json.load(json_file)
         for measure in measure_file_data["measures"]:
-            measures.append(measure)
+            measures.append( Measure(measure["client_tilt"], measure["azimuth_angle"], measure["elevation_angle"], measure["power"], measure["distance"]) )
         
     return measures
 
@@ -89,24 +125,16 @@ def differenza_angoli(angolo1, angolo2):
     
     return -diff_gradi
 
-# Funzione che prende in input un set di misure e ritorna gli endpoint di ogni misura
-def get_endpoints(cilent_info, ap_info, measures):
-    base_angle_of_router = adattamento_angolo(ap_info["tilt"])
-
-    endpoints = []
+# Funzione che calcola gli endpoints
+def calculate_endpoints(ap_info, measures):
     for measure in measures:
-        azimuth_diff_ap_client = differenza_angoli(base_angle_of_router, adattamento_angolo(measure["client_tilt"])+180)
-        
-        azimuth_rad = np.radians(base_angle_of_router + azimuth_diff_ap_client - measure["azimuthAngle"])
-        elevation_rad = np.radians(-measure["elevationAngle"])
+        measure.calculate_endpoint(ap_info)
 
-        x = ap_info["x"] + measure["distance"] * np.cos(azimuth_rad) * np.cos(elevation_rad)
-        y = ap_info["y"] + measure["distance"] * np.sin(azimuth_rad) * np.cos(elevation_rad)
-        z = ap_info["height"] + measure["distance"] * np.sin(elevation_rad)
+# Funzione che calcola le distanze dal client
+def calculate_distances_from_client(client_info, measures):
+    for measure in measures:
+        measure.calculate_distance_from_client(client_info)
 
-        endpoints.append(np.array([x, y, z]))
-
-    return endpoints
 
 #-------------------MAIN---------------------
 # Prendo le info del client
@@ -119,36 +147,10 @@ ap_info = get_ap_info(get_measures_path(), get_ap_info_path())
 measures = get_measures(get_measures_path())
 
 # Calcolo gli endpoint di ogni misura
-endpoints = get_endpoints(client_info, ap_info, measures)
+calculate_endpoints(ap_info, measures)
 
-
-#-------------------PLOT 3D---------------------
-
-#fig = plt.figure()
-#ax = fig.add_subplot(111, projection='3d')
-
-# Plotto il client
-#ax.scatter(client_info[0], client_info[1], client_info[2], c='green', marker='o')
-
-# Plotto l'access point
-#ax.scatter(ap_info["x"], ap_info["y"], ap_info["height"], c='blue', marker='o')
-
-# Plotto gli endpoints
-#for endpoint in endpoints:
-#    ax.scatter(endpoint[0], endpoint[1], endpoint[2], c='red', marker='o')
-
-
-# Opzionale: Aggiungi etichette agli assi
-#ax.set_xlabel('X')
-#ax.set_ylabel('Y')
-#ax.set_zlabel('Z')
-
-# Opzionale: Imposta i limiti degli assi
-#ax.set_xlim([0, X_ROOM])  
-#ax.set_ylim([0, Y_ROOM]) 
-#ax.set_zlim([0, Z_ROOM]) 
-
-#plt.show()
+# Calcolo le distanze dal client di ogni misura
+calculate_distances_from_client(client_info, measures)
 
 
 #-------------------PLOT 2D---------------------
@@ -168,12 +170,12 @@ plt.plot([X_ROOM, X_ROOM], [0, Y_ROOM], 'k-', lw=2)
 plt.plot([0, X_ROOM], [Y_ROOM, Y_ROOM], 'k-', lw=2)
 
 # Plotto gli endpoints con colore dipendente da endpoint[2]
-for endpoint in endpoints:
-    plt.scatter(endpoint[0], endpoint[1], c=endpoint[2], marker='o')
+for measure in measures:
+    plt.scatter(measure.endpoint[0], measure.endpoint[1], c=measure.endpoint[2], marker='o')
 
-x_values = [point[0] for point in endpoints]
-y_values = [point[1] for point in endpoints]
-tilt_values = [abs(measure["client_tilt"]) for measure in measures]
+x_values = [measure.endpoint[0] for measure in measures]
+y_values = [measure.endpoint[1] for measure in measures]
+tilt_values = [abs(measure.client_tilt) for measure in measures]
 
 # Inverto x_values, y_values e tilt_values per avere un plot in cui si vede di più
 x_values = x_values[::-1]
