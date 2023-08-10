@@ -228,12 +228,12 @@ for client_tilt, distances in grouped_measures.items():
 
 plt.xlabel('Distance from Client (m)')
 plt.ylabel('% of measures of that type')
-plt.title('ECDF with Different Client Tilts')
+plt.title('CDF with Different Client Tilts')
 plt.legend()
 plt.grid(True)
 
 # Salvo il grafico nella stessa directory del file delle misure
-plt.savefig(get_measures_dir() + 'ecdf.pdf', bbox_inches='tight')
+plt.savefig(get_measures_dir() + 'cdf.pdf', bbox_inches='tight')
 
 plt.show()
 
@@ -242,18 +242,31 @@ plt.show()
 # Ordino measures in base alla distanza dal client
 measures.sort(key=lambda measure: measure.distance_from_client)
     
+# Creo un array con i tilt
+tilt_values = [abs(measure.client_tilt) for measure in measures]
+
 # Creo un array con le distanze dal client
 distances = [measure.distance_from_client for measure in measures]
 
 # Creo un array con le potenze
 powers = [measure.power for measure in measures]
 
-# Plotto questi due array
-plt.figure(figsize=(10, 6))
-plt.plot(distances, powers, 'o', color='black')
+# Creare il grafico 2D
+fig = plt.figure(figsize=(10, 6))
+ax = fig.figure.add_subplot(1, 1, 1)
+
+ax.scatter(distances, powers, c=tilt_values, cmap='RdYlGn_r')
+
+# Aggiungere la barra laterale colorata
+norm = Normalize(vmin=min(tilt_values), vmax=max(tilt_values))
+sm = ScalarMappable(cmap='RdYlGn_r', norm=norm)
+sm.set_array([])
+fig.colorbar(sm, ax=ax, ticks=[0, 25, 50, 75, 100], label="Client tilt in degrees")
+
+
 plt.xlabel('Distance from Client (m)')
-plt.ylabel('Power')
-plt.title('Distance-Power Plot')
+plt.ylabel('Normalized received power')
+plt.title('Distance - Received power Plot')
 plt.grid(True)
 
 # Salvo il grafico nella stessa directory del file delle misure
