@@ -237,6 +237,28 @@ plt.savefig(get_measures_dir() + 'ecdf.pdf', bbox_inches='tight')
 
 plt.show()
 
-#---------------------------------END---------------------------------
+#---------------------------------PLOT DISTANZA-POTENZA---------------------------------
+
+# Ordino measures in base alla distanza dal client
+measures.sort(key=lambda measure: measure.distance_from_client)
+    
+# Creo un array con le distanze dal client
+distances = [measure.distance_from_client for measure in measures]
+
+# Creo un array con le potenze
+powers = [measure.power for measure in measures]
+
+# Plotto questi due array
+plt.figure(figsize=(10, 6))
+plt.plot(distances, powers, 'o', color='black')
+plt.xlabel('Distance from Client (m)')
+plt.ylabel('Power')
+plt.title('Distance-Power Plot')
+plt.grid(True)
+
+# Salvo il grafico nella stessa directory del file delle misure
+plt.savefig(get_measures_dir() + 'distance_power.pdf', bbox_inches='tight')
+
+plt.show()
 
 
