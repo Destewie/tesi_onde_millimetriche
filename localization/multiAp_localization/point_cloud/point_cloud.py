@@ -68,6 +68,10 @@ def get_ap_info_path():
 def get_measures_path():
     return os.path.join(os.path.dirname(__file__), "..", PATH_TO_MEASURES_FOLDER, MEASURES_FILENAME)
 
+#torna il path della cartella delle misure
+def get_measures_dir():
+    return os.path.join(os.path.dirname(__file__), "..", PATH_TO_MEASURES_FOLDER)
+
 
 #prendi info sul ap usato per le misure
 def get_ap_info(measures_file_path, routers_info_path):
@@ -157,7 +161,7 @@ calculate_distances_from_client(client_info, measures)
 #-------------------PLOT 2D---------------------
 
 # Creare il grafico 2D
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 6))
 ax = fig.figure.add_subplot(1, 1, 1)
 
 
@@ -198,6 +202,9 @@ plt.scatter(client_info[0], client_info[1], c='magenta', marker='o')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 
+# Salvo il grafico nella stessa directory del file delle misure
+plt.savefig(get_measures_dir() + 'point_cloud.pdf', bbox_inches='tight')
+
 # Mostrare il grafico
 plt.show()
 
@@ -212,20 +219,24 @@ for measure in measures:
     grouped_measures[abs(measure.client_tilt)].append(measure.distance_from_client)
 
 # Calcola l'ECDF per ciascun gruppo di misure
-plt.figure()
+plt.figure(figsize=(10, 6))
 for client_tilt, distances in grouped_measures.items():
     n = len(distances)
     x = np.sort(distances)
     y = np.arange(1, n + 1) / n
     plt.step(x, y, label=f'Client Tilt {client_tilt}')
 
-plt.xlabel('Distance from Client')
+plt.xlabel('Distance from Client (m)')
 plt.ylabel('% of measures of that type')
 plt.title('ECDF with Different Client Tilts')
 plt.legend()
 plt.grid(True)
+
+# Salvo il grafico nella stessa directory del file delle misure
+plt.savefig(get_measures_dir() + 'ecdf.pdf', bbox_inches='tight')
+
 plt.show()
 
-
+#---------------------------------END---------------------------------
 
 
