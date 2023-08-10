@@ -1,0 +1,645 @@
+{
+    "client_ground_truth": 
+    {
+        "x": 2.4,
+        "y": 1.93,
+        "z": 1.47
+    },
+
+    "ap_id": "12",
+
+    "measures": 
+    [
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 12,
+            "power": 0.69247,
+            "distance": 4.8198
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 11,
+            "power": 0.62492,
+            "distance": 4.8072
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 12,
+            "power": 0.54802,
+            "distance": 4.8081
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 11,
+            "power": 0.60264,
+            "distance": 4.7955
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 11,
+            "power": 0.73999,
+            "distance": 4.8072
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 12,
+            "power": 0.70838,
+            "distance": 4.8018
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 11,
+            "power": 0.71873,
+            "distance": 4.8045
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -3,
+            "elevationAngle": 12,
+            "power": 0.54651,
+            "distance": 4.8063
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 12,
+            "power": 0.65956,
+            "distance": 4.8099
+        },
+        {
+            "client_tilt": 0,
+            "azimuthAngle": -4,
+            "elevationAngle": 11,
+            "power": 0.6516,
+            "distance": 4.8036
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.71065,
+            "distance": 4.8135
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.74034,
+            "distance": 4.836
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.66774,
+            "distance": 4.8117
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.73033,
+            "distance": 4.7892
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.68481,
+            "distance": 4.8108
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.70792,
+            "distance": 4.8171
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.66726,
+            "distance": 4.7505
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.75152,
+            "distance": 4.8135
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.68362,
+            "distance": 4.8144
+        },
+        {
+            "client_tilt": 25,
+            "azimuthAngle": -30,
+            "elevationAngle": 13,
+            "power": 0.63673,
+            "distance": 4.8216
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": -62,
+            "elevationAngle": 13,
+            "power": 0.70093,
+            "distance": 4.8414
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": -62,
+            "elevationAngle": 13,
+            "power": 0.66869,
+            "distance": 4.8324
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": 57,
+            "elevationAngle": 13,
+            "power": 0.66237,
+            "distance": 4.8252
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": -62,
+            "elevationAngle": 14,
+            "power": 0.67841,
+            "distance": 4.836
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": -62,
+            "elevationAngle": 13,
+            "power": 0.67382,
+            "distance": 4.8333
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": -62,
+            "elevationAngle": 13,
+            "power": 0.61106,
+            "distance": 4.8288
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": 58,
+            "elevationAngle": 13,
+            "power": 0.57663,
+            "distance": 4.8432
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": 58,
+            "elevationAngle": 13,
+            "power": 0.53083,
+            "distance": 4.8297
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": 57,
+            "elevationAngle": 13,
+            "power": 0.56288,
+            "distance": 4.8378
+        },
+        {
+            "client_tilt": 50,
+            "azimuthAngle": 57,
+            "elevationAngle": 13,
+            "power": 0.67444,
+            "distance": 4.8198
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": 13,
+            "elevationAngle": -37,
+            "power": 0.20257,
+            "distance": 4.9026
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -82,
+            "elevationAngle": 13,
+            "power": 0.23434,
+            "distance": 4.8801
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -82,
+            "elevationAngle": 13,
+            "power": 0.20716,
+            "distance": 4.8819
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": 48,
+            "elevationAngle": 13,
+            "power": 0.19091,
+            "distance": 4.8918
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -75,
+            "elevationAngle": 13,
+            "power": 0.1453,
+            "distance": 4.9044
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -81,
+            "elevationAngle": 13,
+            "power": 0.23623,
+            "distance": 4.8909
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -80,
+            "elevationAngle": 12,
+            "power": 0.16872,
+            "distance": 4.908
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -80,
+            "elevationAngle": 13,
+            "power": 0.20091,
+            "distance": 4.926
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": 19,
+            "elevationAngle": 15,
+            "power": 0.17046,
+            "distance": 4.8954
+        },
+        {
+            "client_tilt": 75,
+            "azimuthAngle": -76,
+            "elevationAngle": 13,
+            "power": 0.21972,
+            "distance": 4.926
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 37,
+            "elevationAngle": 13,
+            "power": 0.2617,
+            "distance": 4.9008
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 37,
+            "elevationAngle": 14,
+            "power": 0.37341,
+            "distance": 4.9053
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.39081,
+            "distance": 4.9197
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.37514,
+            "distance": 4.9071
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.39547,
+            "distance": 4.9107
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.394,
+            "distance": 4.9089
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 37,
+            "elevationAngle": 14,
+            "power": 0.38196,
+            "distance": 4.9116
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.36529,
+            "distance": 4.9197
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.3999,
+            "distance": 4.9098
+        },
+        {
+            "client_tilt": 100,
+            "azimuthAngle": 38,
+            "elevationAngle": 14,
+            "power": 0.35549,
+            "distance": 4.908
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.63229,
+            "distance": 4.8054
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.63181,
+            "distance": 4.809
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.67151,
+            "distance": 4.7991
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.64913,
+            "distance": 4.8099
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.65765,
+            "distance": 4.8018
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.58679,
+            "distance": 4.7982
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.67919,
+            "distance": 4.7928
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.67962,
+            "distance": 4.8045
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.67299,
+            "distance": 4.8063
+        },
+        {
+            "client_tilt": -25,
+            "azimuthAngle": 20,
+            "elevationAngle": 13,
+            "power": 0.67227,
+            "distance": 4.7955
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": -87,
+            "elevationAngle": 12,
+            "power": 0.63483,
+            "distance": 4.7865
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.65772,
+            "distance": 4.8432
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.69146,
+            "distance": 4.7694
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.69666,
+            "distance": 4.8216
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.69973,
+            "distance": 4.7667
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.60763,
+            "distance": 4.7685
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.69282,
+            "distance": 4.818
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.70384,
+            "distance": 4.8234
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": 46,
+            "elevationAngle": 12,
+            "power": 0.69514,
+            "distance": 4.782
+        },
+        {
+            "client_tilt": -50,
+            "azimuthAngle": -90,
+            "elevationAngle": 12,
+            "power": 0.70643,
+            "distance": 4.8198
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 76,
+            "elevationAngle": 13,
+            "power": 0.68005,
+            "distance": 4.8432
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 77,
+            "elevationAngle": 13,
+            "power": 0.55783,
+            "distance": 4.8423
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 76,
+            "elevationAngle": 13,
+            "power": 0.67428,
+            "distance": 4.8432
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 77,
+            "elevationAngle": 13,
+            "power": 0.64632,
+            "distance": 4.8324
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 79,
+            "elevationAngle": 12,
+            "power": 0.47467,
+            "distance": 4.8414
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 75,
+            "elevationAngle": 13,
+            "power": 0.62844,
+            "distance": 4.8648
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 75,
+            "elevationAngle": 13,
+            "power": 0.64593,
+            "distance": 4.8315
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": -49,
+            "elevationAngle": 13,
+            "power": 0.65068,
+            "distance": 4.8414
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": -49,
+            "elevationAngle": 13,
+            "power": 0.63594,
+            "distance": 4.8414
+        },
+        {
+            "client_tilt": -75,
+            "azimuthAngle": 77,
+            "elevationAngle": 13,
+            "power": 0.56721,
+            "distance": 4.8405
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -42,
+            "elevationAngle": 15,
+            "power": 0.3466,
+            "distance": 4.8594
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -43,
+            "elevationAngle": 15,
+            "power": 0.39156,
+            "distance": 4.8603
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -43,
+            "elevationAngle": 15,
+            "power": 0.32579,
+            "distance": 4.8792
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -41,
+            "elevationAngle": 14,
+            "power": 0.32098,
+            "distance": 7.0131
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -42,
+            "elevationAngle": 15,
+            "power": 0.35536,
+            "distance": 4.8693
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -43,
+            "elevationAngle": 15,
+            "power": 0.33997,
+            "distance": 4.872
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -41,
+            "elevationAngle": 14,
+            "power": 0.33126,
+            "distance": 4.8657
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -40,
+            "elevationAngle": 13,
+            "power": 0.29288,
+            "distance": 4.881
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -42,
+            "elevationAngle": 15,
+            "power": 0.32978,
+            "distance": 4.8729
+        },
+        {
+            "client_tilt": -100,
+            "azimuthAngle": -42,
+            "elevationAngle": 15,
+            "power": 0.35765,
+            "distance": 4.8765
+        }
+    ]    
+    
+}
