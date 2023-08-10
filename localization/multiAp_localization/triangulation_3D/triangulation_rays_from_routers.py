@@ -175,6 +175,14 @@ def error_function(point, reliable_routers):
 
     return error
 
+# Funzione che calcola la distanza media tra il router e ogni raggio di qualità
+def average_distance_point_rays(point, reliable_routers):
+    average_distance = 0
+    for reliable_router in reliable_routers:
+        average_distance += distance_router_ray(np.array([point[0], point[1], point[2]]), reliable_router.get_ray_start_point(), reliable_router.get_ray_end_point())
+
+    return average_distance / len(reliable_routers)
+
 
 # Funzione che trova la posizione stimata del client minimizzando error_function
 def find_client_position(reliable_routers):
@@ -279,12 +287,12 @@ print("----------------------------CLIENT INFO----------------------------")
 print("Vera posizione del client: " + str(real_client_coordinates))
 #calcolo l'errore complessivo delle misure
 adattamento_posizione_client = [real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]
-print("Errore complessivo delle misure (solo router di qualità): " + str(error_function(adattamento_posizione_client, reliable_routers)))
+print("Distanza (m) media tra client e le misure (solo router di qualità): " + str(average_distance_point_rays(adattamento_posizione_client, reliable_routers))) 
 
 # calcolo la distanza tra la vera posizione del client e ogni raggio
 for router in routers:
     router.distance = distance_router_ray(np_client_position, router.get_ray_start_point(), router.get_ray_end_point())
-    print("Distanza tra il client e il raggio " + str(router.id) + ": " + str(router.distance))
+    print("Distanza (m) tra il client e il raggio " + str(router.id) + ": " + str(router.distance))
 
 
 print()
@@ -294,24 +302,25 @@ print("----------------------------ESTIMATED POINT INFO-------------------------
 estimated_client_position = find_client_position(reliable_routers)
 np_estimated_position = np.array([estimated_client_position[0], estimated_client_position[1], estimated_client_position[2]])
 print("Posizione stimata del client: " + str(estimated_client_position))
+print("Distanza media (m) tra la stima e le misure (solo router di qualità): " + str(average_distance_point_rays(np_estimated_position, reliable_routers))) 
 
 #calcola la distanza tra la stima e tutti i raggi
 for router in routers:
     router.distance = distance_router_ray(np_estimated_position, router.get_ray_start_point(), router.get_ray_end_point())
-    print("Distanza tra la stima e il raggio " + str(router.id) + ": " + str(router.distance))
+    print("Distanza (m) tra la stima e il raggio " + str(router.id) + ": " + str(router.distance))
 
 print ()
 
 
 #calcolo la distanza tra la vera posizione del client e la stima
-print("Distanza tra la vera posizione del client e la stima: " + str(np.linalg.norm(np_client_position - estimated_client_position)))
+print("Distanza (m) tra la vera posizione del client e la stima: " + str(np.linalg.norm(np_client_position - estimated_client_position)))
 
 
 print()
 
 print("----------------------------OTHER INFO----------------------------")
 #calcolo l'errore che avrei con un numero di APs diverso
-print("Errore medio considerando solo n access points per volta:")
+print("Errore medio (m) considerando solo n access points per volta:")
 error_per_subset_dimension = get_error_with_different_number_of_aps(get_reliable_routers(routers), real_client_coordinates)
 print(error_per_subset_dimension)
 
