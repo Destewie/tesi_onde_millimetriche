@@ -205,7 +205,7 @@ plt.legend(loc='lower left')
 # Forza gli assi ad essere sulla stessa scala
 plt.axis('equal')
 
-plt.title("Measurements point cloud")
+plt.title("Estimated point cloud based on real client's tilt")
 
 # Impostare etichette degli assi
 ax.set_xlabel('X (m)')
