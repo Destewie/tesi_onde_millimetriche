@@ -165,8 +165,9 @@ fig = plt.figure(figsize=(10, 6))
 ax = fig.figure.add_subplot(1, 1, 1)
 
 
-# Plotto l'access point
-plt.scatter(ap_info["x"], ap_info["y"], c='blue', marker='o')
+# Plotto l'access point come un triangolo blu   
+plt.scatter(ap_info["x"], ap_info["y"], c='blue', label='Access Point', marker='^')
+
 
 # Disegna un rettangolo nero che rappresenta la stanza con X_ROOM e Y_ROOM
 plt.plot([0, X_ROOM], [0, 0], 'k-', lw=2)
@@ -195,12 +196,20 @@ sm = ScalarMappable(cmap='RdYlGn_r', norm=norm)
 sm.set_array([])
 fig.colorbar(sm, ax=ax, ticks=[0, 25, 50, 75, 100], label="Client tilt in degrees")
 
-# Plotto il client fuksia
-plt.scatter(client_info[0], client_info[1], c='magenta', marker='o')
+# Plotto il client come un quadrato magenta
+plt.scatter(client_info[0], client_info[1], c='b', label='Client', marker='s')
+
+# Imposto una legenda per dire che il triangolo è l'access point il quadrato è il client, ma il client viene plottato dopo altra roba
+plt.legend(loc='lower left')
+
+# Forza gli assi ad essere sulla stessa scala
+plt.axis('equal')
+
+plt.title("Measurements point cloud")
 
 # Impostare etichette degli assi
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
+ax.set_xlabel('X (m)')
+ax.set_ylabel('Y (m)')
 
 # Salvo il grafico nella stessa directory del file delle misure
 plt.savefig(get_measures_dir() + 'point_cloud.pdf', bbox_inches='tight')
@@ -209,7 +218,7 @@ plt.savefig(get_measures_dir() + 'point_cloud.pdf', bbox_inches='tight')
 plt.show()
 
 
-#----------------------------------CDF PLOT----------------------------------
+#----------------------------------ECDF PLOT----------------------------------
 
 # Organizza le misure in gruppi con lo stesso client_tilt
 grouped_measures = {}
@@ -226,14 +235,14 @@ for client_tilt, distances in grouped_measures.items():
     y = np.arange(1, n + 1) / n
     plt.step(x, y, label=f'Client Tilt {client_tilt}')
 
-plt.xlabel('Distance from Client (m)')
-plt.ylabel('% of measures of that type')
-plt.title('CDF with Different Client Tilts')
+plt.xlabel('Estimation error (m)')
+plt.ylabel('ECDF')
+plt.title('ECDF with Different Client Tilts')
 plt.legend()
 plt.grid(True)
 
 # Salvo il grafico nella stessa directory del file delle misure
-plt.savefig(get_measures_dir() + 'cdf.pdf', bbox_inches='tight')
+plt.savefig(get_measures_dir() + 'estimation_error_ecdf.pdf', bbox_inches='tight')
 
 plt.show()
 
