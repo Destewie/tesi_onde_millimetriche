@@ -215,7 +215,7 @@ ax.set_ylabel('Y (m)')
 plt.savefig(get_measures_dir() + 'point_cloud.pdf', bbox_inches='tight')
 
 # Mostrare il grafico
-plt.show()
+#plt.show()
 
 
 #----------------------------------Estimation error ECDF----------------------------------
@@ -244,7 +244,7 @@ plt.grid(True)
 # Salvo il grafico nella stessa directory del file delle misure
 plt.savefig(get_measures_dir() + 'estimation_error_ecdf.pdf', bbox_inches='tight')
 
-plt.show()
+#plt.show()
 
 
 #---------------------------------Ftm accuracy ECDF-----------------------------------
@@ -279,7 +279,55 @@ plt.grid(True)
 # Salvo il grafico nella stessa directory del file delle misure
 plt.savefig(get_measures_dir() + 'ftm_accuracy_ecdf.pdf', bbox_inches='tight')
 
-plt.show()
+#plt.show()
+
+#---------------------------------MdTrack azimuth accuracy ECDF-----------------------------------
+
+# Raccolgo separatamente tutti gli azimuth misurati sotto i 30 gradi di tilt e quelli sopra i 30 gradi di tilt
+angle_diff_when_tilt_greater_30 = []
+angle_diff_when_tilt_lower_30 = []
+for measure in measures:
+    #calcolo l'errore di azimuth
+    diff_az_misura_realta = abs(measure.azimuth_angle + measure.client_tilt)
+
+    # Divido gli azimuth in due gruppi
+    if abs(measure.client_tilt) > 30:
+        angle_diff_when_tilt_greater_30.append(diff_az_misura_realta)
+    else:
+        angle_diff_when_tilt_lower_30.append(diff_az_misura_realta)
+
+
+# Calcolo l'ECDF per ciascun gruppo di misure
+n = len(angle_diff_when_tilt_greater_30)
+x = np.sort(angle_diff_when_tilt_greater_30)
+y = np.arange(1, n + 1) / n
+
+n2 = len(angle_diff_when_tilt_lower_30)
+x2 = np.sort(angle_diff_when_tilt_lower_30)
+y2 = np.arange(1, n2 + 1) / n2
+
+plt.figure(figsize=(10, 6))
+
+# Plot ECDF
+plt.step(x, y, label='ECDF tilt > 30')
+plt.step(x2, y2, label='ECDF tilt < 30')
+
+plt.xlabel('Azimuth angle difference between measure and reality (degrees)')
+plt.ylabel('ECDF')
+plt.title("MdTrack azimuth accuracy ECDF")
+
+#voglio che l'asse x abbia più tick
+plt.locator_params(axis='x', nbins=20)
+
+
+plt.legend(loc='lower right')
+plt.grid(True)
+
+# Salvo il grafico nella stessa directory del file delle misure
+plt.savefig(get_measures_dir() + 'mdtrack_azimuth_accuracy_ecdf.pdf', bbox_inches='tight')
+
+#plt.show()
+
 
 #---------------------------------PLOT DISTANZA-POTENZA---------------------------------
 
@@ -316,5 +364,5 @@ plt.grid(True)
 # Salvo il grafico nella stessa directory del file delle misure
 plt.savefig(get_measures_dir() + 'distance_power.pdf', bbox_inches='tight')
 
-plt.show()
+#plt.show()
 
