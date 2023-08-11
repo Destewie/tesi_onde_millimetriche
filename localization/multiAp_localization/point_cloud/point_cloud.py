@@ -218,7 +218,7 @@ plt.savefig(get_measures_dir() + 'point_cloud.pdf', bbox_inches='tight')
 plt.show()
 
 
-#----------------------------------ECDF PLOT----------------------------------
+#----------------------------------Estimation error ECDF----------------------------------
 
 # Organizza le misure in gruppi con lo stesso client_tilt
 grouped_measures = {}
@@ -243,6 +243,41 @@ plt.grid(True)
 
 # Salvo il grafico nella stessa directory del file delle misure
 plt.savefig(get_measures_dir() + 'estimation_error_ecdf.pdf', bbox_inches='tight')
+
+plt.show()
+
+
+#---------------------------------Ftm accuracy ECDF-----------------------------------
+
+# Raccogli tutti i range misurati dal client
+ranges = [measure.distance for measure in measures]
+
+# Calcola l'ECDF
+n = len(ranges)
+x = np.sort(ranges)
+y = np.arange(1, n + 1) / n
+
+plt.figure(figsize=(10, 6))
+
+# Plotta una linea verticale che indica il range vero
+real_range = np.linalg.norm(client_info - np.array([ap_info["x"], ap_info["y"], ap_info["height"]]))
+plt.axvline(x=real_range, color='red', label='Real range')
+
+# Plot ECDF
+plt.step(x, y, label='ECDF')
+
+# Voglio limitare x a 5
+plt.xlim(4.75, 4.95)
+
+plt.xlabel('Range (m)')
+plt.ylabel('ECDF')
+plt.title("FTM accuracy ECDF")
+
+plt.legend(loc='lower right')
+plt.grid(True)
+
+# Salvo il grafico nella stessa directory del file delle misure
+plt.savefig(get_measures_dir() + 'ftm_accuracy_ecdf.pdf', bbox_inches='tight')
 
 plt.show()
 
@@ -282,5 +317,4 @@ plt.grid(True)
 plt.savefig(get_measures_dir() + 'distance_power.pdf', bbox_inches='tight')
 
 plt.show()
-
 
