@@ -15,7 +15,8 @@ Z_ROOM = 2.64
 
 #----------------------------------CLASS----------------------------------
 class Sphere:
-    def __init__(self, x, y, z, radius):
+    def __init__(self, id, x, y, z, radius):
+        self.id = id
         self.x = x
         self.y = y
         self.z = z
@@ -70,7 +71,7 @@ def get_spheres_from_json(measures_file, coordinates_file):
         #controllo che la misura della distanza sia affidabile
         if(measure["distance_reliability"] == 1):
             router_info = coordinates[measure["ap_id"]]
-            spheres.append(Sphere(router_info["x"], router_info["y"], router_info["height"], measure["distance"]))
+            spheres.append(Sphere(measure["ap_id"], router_info["x"], router_info["y"], router_info["height"], measure["distance"]))
 
     return spheres 
 
@@ -172,6 +173,12 @@ print("---------------------ESTIMATE INFO---------------------")
 # Calcolo del punto più probabile di intersezione delle sfere
 estimated_point = optimize_distance(spheres)
 print("Estimated point:", estimated_point)
+#volgio vedere quali router sono stati usati per la stima
+print("Router usati per la stima: ", end="")
+for sphere in spheres:
+    print(sphere.id, end=" ")
+print()
+
 print("Errore medio tra la stima e tutte le misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, estimated_point, spheres) / len(spheres)))
 
 print()
