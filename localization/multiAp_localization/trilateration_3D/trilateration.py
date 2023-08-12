@@ -48,7 +48,7 @@ def get_ground_truth(measures_file):
     
 #calculate every possible subset of spheres, excluding all the subsets with only one element and the subset with all the elements
 def all_subsets_except_single_and_full(set_elements):
-    all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(2, len(set_elements)+1))
+    all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(4, len(set_elements)+1))
     return all_subsets
 
 # Funzione che:
@@ -163,7 +163,7 @@ spheres = get_spheres_from_json(sys.argv[1], sys.argv[2])
 print("---------------------CLIENT INFO---------------------")
 client_coordinates = get_ground_truth(sys.argv[1])
 print("Real point: ", client_coordinates)
-print("Errore delle misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, client_coordinates, spheres)))
+print("Errore medio tra il client tutte le misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, client_coordinates, spheres) / len(spheres)))
 print("[L'errore qui sopra indica quanto le misure iniziali sono sbagliate]")
 
 print()
@@ -172,6 +172,9 @@ print("---------------------ESTIMATE INFO---------------------")
 # Calcolo del punto più probabile di intersezione delle sfere
 estimated_point = optimize_distance(spheres)
 print("Estimated point:", estimated_point)
+print("Errore medio tra la stima e tutte le misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, estimated_point, spheres) / len(spheres)))
+
+print()
 print("Distanza client - posizione stimata: " + str(np.linalg.norm(client_coordinates - estimated_point)))
 
 print ()

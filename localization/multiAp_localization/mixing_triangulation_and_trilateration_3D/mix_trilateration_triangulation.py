@@ -132,7 +132,6 @@ def quality_test_router(router):
 def get_weighted_midpoint_of_rays_endpoints(routers):
     sum_of_weights = 0
     sum_of_weighted_endpoints = np.array([0.0, 0.0, 0.0])
-    print()
     for router in routers:
         sum_of_weights += router.ray.power
         endpoint = router.get_ray_end_point()
@@ -259,6 +258,9 @@ rays = get_rays(measures_file)
 #prendo i router
 routers = get_routers(routers_file, rays, real_client_coordinates)
 
+# Prendo i router di qualità
+quality_routers = get_reliable_routers(routers)
+
 
 print()
 
@@ -269,15 +271,20 @@ print("Vera posizione del client: " + str(real_client_coordinates))
 
 #calcolo la distanza totale tra la vera posizione e tutti gli endpoint dei raggi
 print("Quella che segue non so se può essere giustamente interpretata come una misura di errore hardware:")
-print("Distanza totale tra la vera posizione e tutti gli endpoint dei raggi: " + str(distance_from_endpoints(np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]), routers)))
+print("Distanza media tra il client e tutti gli endpoint dei raggi di qualità: " + str(distance_from_endpoints(np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]]), quality_routers)/len(quality_routers)))
 
 
 print()
 
 print("---------------------ESTIMATED CLIENT INFO (MINIMIZATION)---------------------")
 #stimo la posizione del client
-estimated_client = estimate_client_position(routers)
+estimated_client = estimate_client_position(quality_routers)
 print("Posizione stimata del client: " + str(estimated_client))
+
+print("Router usati per la stima: ", end=" ")
+for r in quality_routers:
+    print(r.id, end=" ")
+print()
 
 #calcolo l'errore tra la posizione stimata e quella vera stando attento ai tipi dei dati
 np_client_coordinates = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
@@ -286,7 +293,7 @@ error = np.linalg.norm(np_client_coordinates - np_estimated_position)
 print("Errore di approssimazione dalla minimizzazione: " + str(error))
 
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
-print("Distanza totale tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(estimated_client, routers)))
+print("Distanza media tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(estimated_client, quality_routers)/len(quality_routers)))
 
 print()
 
@@ -297,11 +304,16 @@ quality_routers = get_reliable_routers(routers)
 punto_medio = get_weighted_midpoint_of_rays_endpoints(quality_routers)
 print("Posizione stimata del client: " + str(punto_medio))
 
+print("Router usati per la stima: ", end=" ")
+for r in quality_routers:
+    print(r.id, end=" ")
+print()
+
 #calcolo la differenza tra la media degli endpoints e il cilent reale
 print("Errore di approssimazione della media pesata: " + str(np.linalg.norm(np_client_coordinates - punto_medio)))
 
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
-print("Distanza totale tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(punto_medio, routers)))
+print("Distanza media tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(punto_medio, quality_routers)/len(quality_routers)))
 
 print()
 

@@ -302,6 +302,10 @@ print("----------------------------ESTIMATED POINT INFO-------------------------
 estimated_client_position = find_client_position(reliable_routers)
 np_estimated_position = np.array([estimated_client_position[0], estimated_client_position[1], estimated_client_position[2]])
 print("Posizione stimata del client: " + str(estimated_client_position))
+print("Router usati per la stima: ", end=" ")
+for r in reliable_routers:
+    print(r.id, end=" ")
+print()
 print("Distanza media (m) tra la stima e le misure (solo router di qualità): " + str(average_distance_point_rays(np_estimated_position, reliable_routers))) 
 
 #calcola la distanza tra la stima e tutti i raggi
