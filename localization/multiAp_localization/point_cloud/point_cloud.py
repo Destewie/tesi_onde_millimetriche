@@ -248,9 +248,11 @@ plt.savefig(get_measures_dir() + 'estimation_error_ecdf.pdf', bbox_inches='tight
 
 
 #---------------------------------Ftm accuracy ECDF-----------------------------------
+#calcola il range effettivo
+real_range = np.linalg.norm(client_info - np.array([ap_info["x"], ap_info["y"], ap_info["height"]]))
 
-# Raccogli tutti i range misurati dal client
-ranges = [measure.distance for measure in measures]
+# Raccogli tutte le differenze tra il range vero e la stima che è stata fatta 
+ranges = [abs(float(real_range) - measure.distance) for measure in measures]
 
 # Calcola l'ECDF
 n = len(ranges)
@@ -259,17 +261,13 @@ y = np.arange(1, n + 1) / n
 
 plt.figure(figsize=(10, 6))
 
-# Plotta una linea verticale che indica il range vero
-real_range = np.linalg.norm(client_info - np.array([ap_info["x"], ap_info["y"], ap_info["height"]]))
-plt.axvline(x=real_range, color='red', label='Real range')
-
 # Plot ECDF
 plt.step(x, y, label='ECDF')
 
 # Voglio limitare x a 5
-plt.xlim(4.75, 4.95)
+plt.xlim(0, 0.15)
 
-plt.xlabel('Range (m)')
+plt.xlabel('Range error (m)')
 plt.ylabel('ECDF')
 plt.title("FTM accuracy ECDF")
 
