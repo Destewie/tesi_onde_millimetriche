@@ -134,15 +134,8 @@ def adattamento_angolo(angolo):
 
 # Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
 def differenza_angoli(angolo1, angolo2):
-    # Converto gli angoli in radianti
-    rad_angolo1 = math.radians(angolo1)
-    rad_angolo2 = math.radians(angolo2)
-    
-    # Calcolo la differenza in radianti utilizzando atan2
-    diff_rad = math.atan2(math.sin(rad_angolo1 - rad_angolo2), math.cos(rad_angolo1 - rad_angolo2))
-    
-    # Converto la differenza in gradi
-    diff_gradi = math.degrees(diff_rad)
+
+    diff_gradi = angolo1 - angolo2
     
     # Assicuriamoci che il risultato sia compreso tra -179 e 180 gradi
     if diff_gradi > 180:
