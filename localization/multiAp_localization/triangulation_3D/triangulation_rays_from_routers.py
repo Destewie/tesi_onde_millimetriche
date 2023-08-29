@@ -152,11 +152,11 @@ def error_function(point, reliable_routers):
 
 # Funzione che calcola la distanza media tra il router e ogni raggio di qualità
 def average_distance_point_rays(point, reliable_routers):
-    average_distance = 0
+    total_distance = 0
     for reliable_router in reliable_routers:
-        average_distance += distance_router_ray(np.array([point[0], point[1], point[2]]), reliable_router.get_ray_start_point(), reliable_router.get_ray_end_point())
+        total_distance += distance_router_ray(np.array([point[0], point[1], point[2]]), reliable_router.get_ray_start_point(), reliable_router.get_ray_end_point())
 
-    return average_distance / len(reliable_routers)
+    return total_distance / len(reliable_routers)
 
 
 # Funzione che trova la posizione stimata del client minimizzando error_function
