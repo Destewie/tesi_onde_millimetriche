@@ -100,7 +100,7 @@ def custom_distance_point_all_spheres(dist_function, point, spheres):
 # Funzione di ottimizzazione
 def optimize_distance(spheres):
     result = minimize(
-        lambda point: custom_distance_point_all_spheres(squared_distance_point_sphere, point, spheres),
+        lambda point: custom_distance_point_all_spheres(squared_distance_point_sphere, point, spheres) / len(spheres),
         x0=np.zeros(3),  # Punto iniziale (assumiamo un punto iniziale [0, 0, 0])
         method='BFGS',  # Metodo di ottimizzazione
     )
