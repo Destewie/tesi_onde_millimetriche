@@ -3,12 +3,10 @@ from scipy.optimize import minimize
 import sys
 import os
 import json
-import math
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 from itertools import combinations, chain
-import functools
 
 #----------------------------------CONSTANTS AND GLOBALS--------------------------------------
 
@@ -55,9 +53,7 @@ class Router:
     # Funzione che mi restituisce il punto finale del raggio che parte dal router
     # tieni a mente che il tilt va a modificare il valore dell'angolo di azimuth
     def get_ray_end_point(self):
-        base_angle_for_router = adattamento_angolo(self.tilt) 
-        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, adattamento_angolo(self.client_tilt)+180)
-        azimuth_rad = np.radians(base_angle_for_router + azimuth_diff_ap_client - self.ray.azimuth)
+        azimuth_rad = np.radians(adattamento_angolo(self.client_tilt)+180 - self.ray.azimuth)
         elevation_rad = np.radians(-self.ray.elevation)
         x = self.x + RAY_LENGTH * np.cos(azimuth_rad) * np.cos(elevation_rad)
         y = self.y + RAY_LENGTH * np.sin(azimuth_rad) * np.cos(elevation_rad)
@@ -131,20 +127,6 @@ def quality_test_router(router):
 # Funzione che trasforma un qualsiasi angolo in gradi centigradi in un nuovo angolo in gradi centigradi che rispetti il sistema di riferimento che voglio io
 def adattamento_angolo(angolo):
     return ANGLE_OFFSET - angolo
-
-# Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
-def differenza_angoli(angolo1, angolo2):
-
-    diff_gradi = angolo1 - angolo2
-    
-    # Assicuriamoci che il risultato sia compreso tra -179 e 180 gradi
-    if diff_gradi > 180:
-        diff_gradi -= 360
-    elif diff_gradi < -180:
-        diff_gradi += 360
-    
-    return -diff_gradi
-
 
 # Funzione per la distanza client - raggio 
 def distance_router_ray(client, ray_starting_point, ray_ending_point):

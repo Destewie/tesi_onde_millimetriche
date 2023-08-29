@@ -46,9 +46,7 @@ class Router:
     # Funzione che mi restituisce il punto finale del raggio che parte dal router
     # tieni a mente che il tilt va a modificare il valore dell'angolo di azimuth
     def get_ray_end_point(self):
-        base_angle_for_router = adattamento_angolo(self.tilt)
-        azimuth_diff_ap_client = differenza_angoli(base_angle_for_router, adattamento_angolo(self.client_tilt)+180)
-        azimuth_rad = np.radians(base_angle_for_router + azimuth_diff_ap_client - self.ray.azimuth)
+        azimuth_rad = np.radians(adattamento_angolo(self.client_tilt)+ 180 - self.ray.azimuth)
         elevation_rad = np.radians(-self.ray.elevation)
         x = self.x + self.ray.length * np.cos(azimuth_rad) * np.cos(elevation_rad)
         y = self.y + self.ray.length * np.sin(azimuth_rad) * np.cos(elevation_rad)
@@ -143,26 +141,6 @@ def get_weighted_midpoint_of_rays_endpoints(routers):
     sum_of_weighted_endpoints[2] = sum_of_weighted_endpoints[2] / sum_of_weights
     return sum_of_weighted_endpoints
 
-
-# Funzione importantissima che mi serve per capire di quanti gradi dovrei tiltare l'ap per avere che punta in modo parallelo ed opposto alla direzione del client
-def differenza_angoli(angolo1, angolo2):
-    # Converto gli angoli in radianti
-    rad_angolo1 = math.radians(angolo1)
-    rad_angolo2 = math.radians(angolo2)
-    
-    # Calcolo la differenza in radianti utilizzando atan2
-    diff_rad = math.atan2(math.sin(rad_angolo1 - rad_angolo2), math.cos(rad_angolo1 - rad_angolo2))
-    
-    # Converto la differenza in gradi
-    diff_gradi = math.degrees(diff_rad)
-    
-    # Assicuriamoci che il risultato sia compreso tra -179 e 180 gradi
-    if diff_gradi > 180:
-        diff_gradi -= 360
-    elif diff_gradi < -180:
-        diff_gradi += 360
-    
-    return -diff_gradi
 
 # Funzione che calcola la distanza tra il punto in input e tutti gli end point dei raggi
 def distance_from_endpoints(point, routers):
