@@ -326,20 +326,13 @@ for router in routers:
     ax.scatter(router.get_ray_end_point()[0], router.get_ray_end_point()[1], router.get_ray_end_point()[2], color='b')
 
 #plotto la vera posizione del client
-ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
+ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green', s=80)
 
-#plotto una linea lunga uno che parte dal client, è parallela al piano x-y e punta verso client.tilt
-#usa real_client_coordinates["tilt"] per capire il punto finale della linea
-x = [real_client_coordinates["x"], real_client_coordinates["x"] + math.cos(math.radians(-real_client_coordinates["tilt"] + ANGLE_OFFSET))]
-y = [real_client_coordinates["y"], real_client_coordinates["y"] + math.sin(math.radians(-real_client_coordinates["tilt"] + ANGLE_OFFSET))]
-z = [real_client_coordinates["z"], real_client_coordinates["z"]]
-ax.plot(x, y, z, color='green')
-
-#plotto la posizione stimata del client
-ax.scatter(estimated_client[0], estimated_client[1], estimated_client[2], color='red', marker='x')
+#plotto la posizione stimata del client tramite minimizzazione dell'errore
+#ax.scatter(estimated_client[0], estimated_client[1], estimated_client[2], color='red', marker='x', s=80)
 
 #plotto il punto medio degli endpoint dei router di qualità
-ax.scatter(punto_medio[0], punto_medio[1], punto_medio[2], color='orange', marker='x')
+ax.scatter(punto_medio[0], punto_medio[1], punto_medio[2], color='red', marker='x', s=80)
 
 # Opzionale: Aggiungi etichette agli assi
 ax.set_xlabel('X')
