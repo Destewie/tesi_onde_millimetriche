@@ -170,6 +170,7 @@ def find_client_position(reliable_routers):
             method='BFGS'
         )
 
+    # x non è la coordinata, ma un oggetto che contiene le coordinate rispetto a tutti gli assi
     return res.x
 
 
