@@ -323,11 +323,11 @@ for router in routers:
     #plotto il router (grosso)
     ax.scatter(router.x, router.y, router.z, color='b', s=100)
 
-#plotto la vera posizione del client
-ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green')
+#plotto la vera posizione del client abbastanza grande da essere visibile
+ax.scatter(real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"], color='green', s=70)
 
 #plotto la stima della posizione del client (big)
-ax.scatter(estimated_client_position[0], estimated_client_position[1], estimated_client_position[2], color='red', marker='x', s=50)
+ax.scatter(estimated_client_position[0], estimated_client_position[1], estimated_client_position[2], color='red', marker='x', s=70)
 
 #--------------- Animazione ---------------
 # Voglio animare la stima della posizione del client usando le posizioni salvate in estimate_evolution
