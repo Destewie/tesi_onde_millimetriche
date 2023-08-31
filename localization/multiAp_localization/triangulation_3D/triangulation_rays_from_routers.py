@@ -234,6 +234,15 @@ def save_json(dictionary, measures_file):
 def plot_point(point, ax, color):
     ax.scatter(point[0], point[1], point[2], marker='x', color=color)
 
+# Funzione che salva un valore in un file txt nella stessa cartella del file delle misure
+def save_txt(value, measures_file):
+    folder_path = os.path.dirname(measures_file)
+    file_name = "triangulation_error.txt"
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'w') as outfile:
+        outfile.write(str(value))
+
+
 #----------------------------------MAIN----------------------------------
 
 #controllo argomenti
@@ -293,7 +302,9 @@ print ()
 
 
 #calcolo la distanza tra la vera posizione del client e la stima
-print("Distanza (m) tra la vera posizione del client e la stima: " + str(np.linalg.norm(np_client_position - estimated_client_position)))
+triangulation_error = np.linalg.norm(np_client_position - estimated_client_position)
+print("Distanza (m) tra la vera posizione del client e la stima: " + str(triangulation_error))
+save_txt(triangulation_error, sys.argv[1])
 
 
 print()
