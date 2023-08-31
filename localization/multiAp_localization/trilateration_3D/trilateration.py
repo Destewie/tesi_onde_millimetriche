@@ -152,6 +152,13 @@ def save_json(dictionary, measures_file):
     with open(file_path, 'w') as outfile:
         json.dump(dictionary, outfile)
 
+# Funzione che salva un valore in un file txt nella stessa cartella del file delle misure
+def save_txt(value, measures_file):
+    folder_path = os.path.dirname(measures_file)
+    file_name = "trilateration_error.txt"
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'w') as outfile:
+        outfile.write(str(value))
 
 #----------------------------------MAIN----------------------------------
 
@@ -182,7 +189,9 @@ print()
 print("Errore medio tra la stima e tutte le misure: " + str(custom_distance_point_all_spheres(distance_point_sphere, estimated_point, spheres) / len(spheres)))
 
 print()
-print("Distanza client - posizione stimata: " + str(np.linalg.norm(client_coordinates - estimated_point)))
+trilateration_error = np.linalg.norm(estimated_point - client_coordinates)
+print("Distanza client - posizione stimata: " + str(trilateration_error))
+save_txt(trilateration_error, sys.argv[1])
 
 print ()
 
