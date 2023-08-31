@@ -182,7 +182,8 @@ def estimate_client_position(routers):
 # Funzione che ricava l'errore che avrei con un numero di APs diverso
 def get_error_with_different_number_of_aps(routers, real_client_coordinates):
     #ora lancio optimize_distances with every possibile subset of spheres and calculate the distance between it and the ground truth
-    router_subsets = all_subsets_except_single_elements(routers) 
+    #router_subsets = all_subsets_except_single_elements(routers) 
+    router_subsets = all_subsets(routers) 
 
     #calcolo il punto che ottimizza la distanza per ogni sottoinsieme di sfere e lo salvo in un dizionario con chiave il numero di sfere nel sottoinsieme
     error_per_subset_dimension = {} #array che conterrà la distanza media tra il punto stimato e la ground truth per ogni numero di sfere nel sottoinsieme
