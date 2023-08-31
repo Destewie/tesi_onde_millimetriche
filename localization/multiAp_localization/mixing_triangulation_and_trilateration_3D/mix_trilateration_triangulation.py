@@ -122,6 +122,11 @@ def all_subsets_except_single_elements(set_elements):
     all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(2, len(set_elements)+1))
     return all_subsets
 
+# Calculate every possible subset of spheres
+def all_subsets(set_elements):
+    all_subsets = chain.from_iterable(combinations(set_elements, r) for r in range(1, len(set_elements)+1))
+    return all_subsets
+
 # Funzione del quality test di un router
 def quality_test_router(router):
     return (router.ray.power >= POWER_THRESHOLD and router.ray.reliable_distance)
