@@ -223,6 +223,14 @@ def save_json(dictionary, measures_file):
     with open(file_path, 'w') as outfile:
         json.dump(dictionary, outfile)
 
+# Funzione che salva un valore in un file txt nella stessa cartella del file delle misure
+def save_txt(value, measures_file):
+    folder_path = os.path.dirname(measures_file)
+    file_name = "mixed_algorithm_error.txt"
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'w') as outfile:
+        outfile.write(str(value))
+
 
 #----------------------------------MAIN----------------------------------
 
@@ -294,7 +302,12 @@ for r in quality_routers:
 print()
 
 #calcolo la differenza tra la media degli endpoints e il cilent reale
-print("Errore di approssimazione della media pesata: " + str(np.linalg.norm(np_client_coordinates - punto_medio)) + "m")
+weighted_average_estimation_error = np.linalg.norm(np_client_coordinates - punto_medio)
+print("Errore di approssimazione della media pesata: " + str(weighted_average_estimation_error) + "m")
+
+# Stampo su file l'errore di approssimazione e lo metto nella stessa cartella del primo argomento ricevuto da linea di comando
+save_txt(weighted_average_estimation_error, sys.argv[1])
+
 
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
 print("Distanza media tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(punto_medio, quality_routers)/len(quality_routers)) + "m")
