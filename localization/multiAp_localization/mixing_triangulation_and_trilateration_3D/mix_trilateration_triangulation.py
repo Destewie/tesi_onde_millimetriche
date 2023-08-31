@@ -274,7 +274,7 @@ print()
 np_client_coordinates = np.array([real_client_coordinates["x"], real_client_coordinates["y"], real_client_coordinates["z"]])
 np_estimated_position = np.array(estimated_client)
 error = np.linalg.norm(np_client_coordinates - np_estimated_position)
-print("Errore di approssimazione dalla minimizzazione: " + str(error))
+print("Errore di approssimazione della minimizzazione: " + str(error) + "m")
 
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
 print("Distanza media tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(estimated_client, quality_routers)/len(quality_routers)))
@@ -294,7 +294,7 @@ for r in quality_routers:
 print()
 
 #calcolo la differenza tra la media degli endpoints e il cilent reale
-print("Errore di approssimazione della media pesata: " + str(np.linalg.norm(np_client_coordinates - punto_medio)))
+print("Errore di approssimazione della media pesata: " + str(np.linalg.norm(np_client_coordinates - punto_medio)) + "m")
 
 #calcolo la distanza totale tra la posizione stimata e tutti gli endpoint dei raggi
 print("Distanza media tra la posizione stimata e gli endpoints dei raggi di qualita': " + str(distance_from_endpoints(punto_medio, quality_routers)/len(quality_routers)))
