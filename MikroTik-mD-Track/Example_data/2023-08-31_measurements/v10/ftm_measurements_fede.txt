@@ -1,0 +1,10 @@
+
+[ 3495.884808] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 3503.412401] wil6210 0000:01:00.0 wlan0: wil_ftm_start_session: [FTM] Peer MAC address 08:55:31:9b:0a:1b
+[ 3512.444878] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 6647861148, 92177100, 101320704, 6658880124
+[ 3520.999767] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 7075084188, 117570576, 126707712, 7086096600
+[ 3521.515108] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 7177123740, 317468100, 326608896, 7188139884
+[ 3527.567724] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Falied measurement
+[ 3527.593912] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session
+[ 3530.390777] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 3535.163115] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session

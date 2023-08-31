@@ -1,0 +1,12 @@
+
+[ 1366.065260] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 125728668, 117499632, 126646272, 136737780
+[ 1383.208155] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 1392.857987] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 1068543900, 71860272, 81014784, 1079566992
+[ 1393.386706] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 1190010780, 3096681528, 3105822720, 1201020204
+[ 1393.957205] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 1311453084, 3280259016, 3289417728, 1322480448
+[ 1394.477401] wil6210 0000:01:00.0 wlan0: wil_ftm_evt_per_dest_res: [FTM] Measurement: 1432919964, 3514613460, 3523743744, 1443918852
+[ 1398.487500] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_session_ended: finishing FTM session
+[ 1403.930307] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 1403.930307] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 1405.064484] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
+[ 1405.064484] wil6210 0000:01:00.0 wlan0: wil_ftm_cfg80211_start_session: FTM or AOA session already running
