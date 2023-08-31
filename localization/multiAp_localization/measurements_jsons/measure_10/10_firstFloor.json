@@ -1,0 +1,53 @@
+{
+    "client_ground_truth": 
+    {
+        "x": 5.2,
+        "y": 4.857,
+        "z": 1.234,
+        "tilt": 0
+    },
+
+    "measures":
+    [
+        {
+            "ap_id": "9",
+            "azimuthAngle":-132, 
+            "elevationAngle":9, 
+            "power":0.73928, 
+            "distance":6.574,
+            "distance_reliability": true
+        },
+        {
+            "ap_id": "10",
+            "azimuthAngle":167, 
+            "elevationAngle":13, 
+            "power":0.7521, 
+            "distance":4.9593,
+            "distance_reliability": true
+        },
+        {
+            "ap_id": "11",
+            "azimuthAngle":22, 
+            "elevationAngle":36, 
+            "power":0.73471, 
+            "distance":2.2647,
+            "distance_reliability": true
+        },
+        {
+            "ap_id": "12",
+            "azimuthAngle":-57, 
+            "elevationAngle":20, 
+            "power":0.63392, 
+            "distance":3.1971,
+            "distance_reliability": true
+        },
+        {
+            "ap_id": "13",
+            "azimuthAngle":-79, 
+            "elevationAngle":11, 
+            "power":0.50199, 
+            "distance":5.3274,
+            "distance_reliability": true
+        }
+    ]
+}
