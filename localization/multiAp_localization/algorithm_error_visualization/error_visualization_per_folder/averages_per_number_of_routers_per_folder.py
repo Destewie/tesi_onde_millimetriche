@@ -121,6 +121,10 @@ if __name__ == "__main__":
     check_args()
 
     trilateration_dict, triangulation_dict, hybrid_dict = create_dicts_with_averages_per_router_cardinality()
+    #stampo i dizionari
+    print("Trilateration dict: ", trilateration_dict)
+    print("Triangulation dict: ", triangulation_dict)
+    print("Hybrid dict: ", hybrid_dict)
     
     plot_graphs(trilateration_dict, triangulation_dict, hybrid_dict)
 
