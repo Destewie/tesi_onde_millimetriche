@@ -16,10 +16,12 @@ def check_input():
 #Funzione che va a prendere il valore contenuto in tutti i file .txt presenti nella cartella di misure e crea la media per ogni metodo di localizzazione
 def get_average_error_per_method_from_files():
     error_per_localization_method = {}
+    numero_di_misure = 0
 
     for dir_misura in os.listdir(sys.argv[1]):
         full_path_dir_misura = os.path.join(sys.argv[1], dir_misura)
         if(os.path.isdir(full_path_dir_misura)):
+            numero_di_misure += 1
             for file in os.listdir(full_path_dir_misura):
                 if file.endswith(".txt"):
                     #prendo la parte prima del .txt e, se non esiste, la creo con valore 0
@@ -33,9 +35,6 @@ def get_average_error_per_method_from_files():
     #se il dict è rimasto vuoto sollevo un'eccezione
     if not error_per_localization_method:
         raise Exception("ERROR: non ci sono file .txt nella cartella di misure")
-
-
-    numero_di_misure = len(os.listdir(sys.argv[1]))
 
     #calcolo la media per ogni errore accumulato finora
     for(key, value) in error_per_localization_method.items():
