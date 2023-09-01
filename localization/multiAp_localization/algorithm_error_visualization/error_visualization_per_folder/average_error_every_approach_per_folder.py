@@ -19,10 +19,7 @@ def get_average_error_per_method_from_files():
 
     for dir_misura in os.listdir(sys.argv[1]):
         full_path_dir_misura = os.path.join(sys.argv[1], dir_misura)
-        if(not os.path.isdir(full_path_dir_misura)):
-            #solleva eccezione se non è una cartella
-            raise Exception("ERROR: il parametro inserito non è una cartella")
-        else :
+        if(os.path.isdir(full_path_dir_misura)):
             for file in os.listdir(full_path_dir_misura):
                 if file.endswith(".txt"):
                     #prendo la parte prima del .txt e, se non esiste, la creo con valore 0
@@ -54,7 +51,7 @@ def ottieni_plot(errori_medi_dict):
 
     plt.bar(range(len(errori_medi_dict)), list(errori_medi_dict.values()), align='center', color=colori)
     plt.xticks(range(len(errori_medi_dict)), list(errori_medi_dict.keys()))
-    plt.ylabel("Errore medio")
+    plt.ylabel("Errore medio (m)")
     plt.title("Errore di localizzazione medio per ogni approccio")
 
     return plt
