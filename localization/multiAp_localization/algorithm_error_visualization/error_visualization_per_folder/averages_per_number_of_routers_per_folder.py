@@ -87,25 +87,25 @@ def plot_graphs(trilateration_dict, triangulation_dict, hybrid_dict):
     # si crea il plot a colonne per la trilaterazione
     plt.figure()
     plt.bar(trilateration_keys, trilateration_values, color='blue')
-    plt.xlabel("Number of routers")
+    plt.xlabel("Number of anchors")
     plt.ylabel("Average error (m)")
-    plt.title("Trilateration average error per number of routers")
+    plt.title("Trilateration average error per number of anchors")
     salva_plot(plt, "trilateration_average_error_per_number_of_routers.pdf")
 
     # si crea il plot a colonne per la triangolazione
     plt.figure()
     plt.bar(triangulation_keys, triangulation_values, color='red')
-    plt.xlabel("Number of routers")
+    plt.xlabel("Number of anchors")
     plt.ylabel("Average error (m)")
-    plt.title("Triangulation average error per number of routers")
+    plt.title("Triangulation average error per number of anchors")
     salva_plot(plt, "triangulation_average_error_per_number_of_routers.pdf")
 
     # si crea il plot a colonne per l'algoritmo ibrido
     plt.figure()
     plt.bar(hybrid_keys, hybrid_values, color='purple')
-    plt.xlabel("Number of routers")
+    plt.xlabel("Number of anchors")
     plt.ylabel("Average error (m)")
-    plt.title("Hybrid algorithm average error per number of routers")
+    plt.title("Hybrid algorithm average error per number of anchors")
     salva_plot(plt, "hybrid_algorithm_average_error_per_number_of_routers.pdf")
 
 
@@ -144,9 +144,9 @@ if __name__ == "__main__":
     plt.bar(x_axis, hybrid_values, width=0.2, color='purple', label="Hybrid algorithm error")
 
     plt.xticks(x_axis, keys)
-    plt.xlabel("Number of routers")
+    plt.xlabel("Number of anchors")
     plt.ylabel("Average error (m)")
-    plt.title("Average error per number of routers")
+    plt.title("Average error per number of anchors")
     plt.legend()
     salva_plot(plt, "average_error_per_number_of_routers.pdf")
     plt.show()
