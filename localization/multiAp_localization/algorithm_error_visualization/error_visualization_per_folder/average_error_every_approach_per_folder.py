@@ -46,7 +46,7 @@ def get_average_error_per_method_from_files():
 def ottieni_plot(errori_medi_dict):
     
     #assegno un colore ad ogni barra
-    colori = ['b', 'purple', 'r', 'c', 'm', 'y', 'k', 'w']
+    colori = ['r', 'purple', 'b', 'c', 'm', 'y', 'k', 'w']
 
     plt.bar(range(len(errori_medi_dict)), list(errori_medi_dict.values()), align='center', color=colori)
     plt.xticks(range(len(errori_medi_dict)), list(errori_medi_dict.keys()))
