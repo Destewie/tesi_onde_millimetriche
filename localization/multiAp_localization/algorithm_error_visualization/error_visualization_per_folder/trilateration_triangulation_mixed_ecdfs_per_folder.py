@@ -44,7 +44,6 @@ def get_error_values():
     if len(mixed_error_values) == 0:
         raise Exception("No mixed_algorithm_error.txt files found")
     
-    print(trilateration_error_values)
     return trilateration_error_values, triangulation_error_values, mixed_error_values
 
 
@@ -72,6 +71,7 @@ def get_ecdf_plots(error_values_trilateration, error_values_triangulation, error
     plt.title("ECDF of trilateration error")
     plt.grid(True)
     trilateration_plot = plt
+    save_plot(trilateration_plot, "trilateration_error_ecdf.pdf")
 
     #ECDF della triangolazione colore rosso
     plt.figure()
@@ -81,6 +81,7 @@ def get_ecdf_plots(error_values_trilateration, error_values_triangulation, error
     plt.title("ECDF of triangulation error")
     plt.grid(True)
     triangulation_plot = plt
+    save_plot(triangulation_plot, "triangulation_error_ecdf.pdf")
 
     #ECDF dell'algoritmo misto colore magenta
     plt.figure()
@@ -90,6 +91,7 @@ def get_ecdf_plots(error_values_trilateration, error_values_triangulation, error
     plt.title("ECDF of mixed algorithm error")
     plt.grid(True)
     mixed_plot = plt
+    save_plot(mixed_plot, "mixed_algorithm_error_ecdf.pdf")
 
     #ECDF di tutti e tre i metodi unendo i puntini in modo diretto
     plt.figure()
@@ -102,6 +104,7 @@ def get_ecdf_plots(error_values_trilateration, error_values_triangulation, error
     plt.legend()
     plt.grid(True)
     comparison_plot = plt
+    save_plot(comparison_plot, "comparison_ecdf.pdf")
 
 
     return trilateration_plot, triangulation_plot, mixed_plot, comparison_plot
@@ -121,11 +124,6 @@ if __name__ == "__main__":
     try:
         trilateration_error_values, triangulation_error_values, mixed_error_values = get_error_values()
         trilateration_plot, triangulation_plot, mixed_plot, comparison_plot = get_ecdf_plots(trilateration_error_values, triangulation_error_values, mixed_error_values)
-
-        save_plot(trilateration_plot, "trilateration_error_ecdf.pdf")
-        save_plot(triangulation_plot, "triangulation_error_ecdf.pdf")
-        save_plot(mixed_plot, "mixed_algorithm_error_ecdf.pdf")
-        save_plot(comparison_plot, "comparison_ecdf.pdf")
 
         trilateration_plot.show()
         triangulation_plot.show()

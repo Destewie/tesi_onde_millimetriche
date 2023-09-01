@@ -233,7 +233,7 @@ for client_tilt, distances in grouped_measures.items():
     n = len(distances)
     x = np.sort(distances)
     y = np.arange(1, n + 1) / n
-    plt.step(x, y, label=f'Client Tilt {client_tilt}')
+    plt.plot(x, y, label=f'Client Tilt {client_tilt}')
 
 plt.xlabel('Estimation error (m)')
 plt.ylabel('ECDF')
@@ -262,7 +262,7 @@ y = np.arange(1, n + 1) / n
 plt.figure(figsize=(10, 6))
 
 # Plot ECDF
-plt.step(x, y, label='ECDF')
+plt.plot(x, y, label='ECDF')
 
 # Voglio limitare x a 5
 plt.xlim(0, 0.15)
@@ -307,8 +307,8 @@ y2 = np.arange(1, n2 + 1) / n2
 plt.figure(figsize=(10, 6))
 
 # Plot ECDF
-plt.step(x, y, label='ECDF tilt > 30')
-plt.step(x2, y2, label='ECDF tilt < 30')
+plt.plot(x, y, label='ECDF tilt > 30')
+plt.plot(x2, y2, label='ECDF tilt < 30')
 
 plt.xlabel('Azimuth angle difference between measure and reality (degrees)')
 plt.ylabel('ECDF')
